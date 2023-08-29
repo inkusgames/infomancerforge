@@ -2,9 +2,17 @@
 
 Infomancer Forge is a tool to assist with any kind of game data the design, the capture and viewing the data's relationships.
 
-## Build version
+## Built version
 
 You can get the built verion of Informancer Forge on [Itch.io](https://inkusgames.itch.io/informancer-forge)
+
+## Some screen shots
+
+![Node View](https://img.itch.zone/aW1hZ2UvMjA2MzI2MS8xMjE3NDY1Ni5wbmc=/original/cUImmT.png))
+
+![Design View](https://img.itch.zone/aW1hZ2UvMjA2MzI2MS8xMjE3NDY1NS5wbmc=/original/OVMqCQ.png)
+
+![Data View](https://img.itch.zone/aW1hZ2UvMjA2MzI2MS8xMjE3NDY1Ny5wbmc=/original/F4S6rc.png)
 
 ## Libraries used within IF's code
 
