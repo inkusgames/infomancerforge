@@ -1,0 +1,291 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cinch</groupId>
+	<artifactId>infomancerforge</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Infomancer Forge</name>
+	<properties>
+		<maven.compiler.source>19</maven.compiler.source>
+		<maven.compiler.target>19</maven.compiler.target>
+		<maven.compiler.release>19</maven.compiler.release>
+	</properties>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>3.0.1</version>
+					<executions>
+						<execution>
+							<id>install-dockingcore-external</id>
+							<phase>clean</phase>
+							<configuration>
+								<file>${basedir}/libs/docking-frames-core.jar</file>
+								<groupId>org.dockingframes</groupId>
+								<artifactId>docking-frames-core</artifactId>
+								<version>1.1.3p1</version>
+								<packaging>jar</packaging>
+								<generatePom>true</generatePom>
+							</configuration>
+							<goals>
+								<goal>install-file</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>install-dockingcommon-external</id>
+							<phase>clean</phase>
+							<configuration>
+								<file>${basedir}/libs/docking-frames-common.jar</file>
+								<groupId>org.dockingframes</groupId>
+								<artifactId>docking-frames-common</artifactId>
+								<version>1.1.3p1</version>
+								<packaging>jar</packaging>
+								<generatePom>true</generatePom>
+							</configuration>
+							<goals>
+								<goal>install-file</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>3.0.0</version>
+					<executions>
+						<execution>
+							<id>java</id>
+							<goals>
+								<goal>java</goal>
+							</goals>
+							<configuration>
+								<mainClass>${mainClass}</mainClass>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.11.0</version>
+					<configuration>
+						<source>1.19</source>
+						<target>1.19</target>
+					</configuration>
+				</plugin>
+				<!-- plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<configuration>
+						<archive>
+							<manifest>
+								<mainClass>com.cinch.adventurebuilderstoolkit.AdventureBuildersToolkitLauncher</mainClass>
+							</manifest>
+						</archive>
+						<descriptorRefs>
+							<descriptorRef>jar-with-dependencies</descriptorRef>
+						</descriptorRefs>
+					</configuration>
+					<executions>
+						<execution>
+							<id>make-assembly</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin -->
+
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-dependency-plugin</artifactId>
+			  <executions>
+			    <execution>
+			      <id>copy-dependencies</id>
+			      <phase>prepare-package</phase>
+			      <goals>
+			        <goal>copy-dependencies</goal>
+			      </goals>
+			      <configuration>
+			        <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+			      </configuration>
+			    </execution>
+			  </executions>
+			</plugin>
+			
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-jar-plugin</artifactId>
+			  <configuration>
+			    <archive>
+			      <manifest>
+			        <addClasspath>true</addClasspath>
+			        <classpathPrefix>dependency/</classpathPrefix>
+			        <mainClass>com.cinch.adventurebuilderstoolkit.AdventureBuildersToolkitLauncher</mainClass>
+			      </manifest>
+			    </archive>
+			  </configuration>
+			</plugin>
+
+			</plugins>
+		</pluginManagement>
+	</build>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/com.formdev/flatlaf -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.formdev/flatlaf-intellij-themes -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-intellij-themes</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.formdev/flatlaf-extras -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>flatlaf-extras</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.formdev/svgSalamander -->
+		<dependency>
+			<groupId>com.formdev</groupId>
+			<artifactId>svgSalamander</artifactId>
+			<version>1.1.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.10</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.19.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.19.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>2.19.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+		<dependency>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <version>1.9.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.kordamp.ikonli</groupId>
+			<artifactId>ikonli-swing</artifactId>
+			<version>12.3.1</version>
+		</dependency>
+		<!-- https://kordamp.org/ikonli/cheat-sheet-fluentui.html -->
+		<dependency>
+			<groupId>org.kordamp.ikonli</groupId>
+			<artifactId>ikonli-fluentui-pack</artifactId>
+			<version>12.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.kordamp.ikonli</groupId>
+			<artifactId>ikonli-devicons-pack</artifactId>
+			<version>12.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.kordamp.ikonli</groupId>
+			<artifactId>ikonli-materialdesign2-pack</artifactId>
+			<version>12.3.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.java.dev.flexdock/flexdock -->
+		<!-- <dependency>
+			<groupId>net.java.dev.flexdock</groupId>
+			<artifactId>flexdock</artifactId>
+			<version>0.4</version>
+		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.snap</groupId>
+			<artifactId>snap-core</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.dockingframes</groupId>
+			<artifactId>docking-frames-core</artifactId>
+			<version>1.1.3p1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.dockingframes</groupId>
+			<artifactId>docking-frames-common</artifactId>
+			<version>1.1.3p1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.glazedlists/glazedlists -->
+		<dependency>
+			<groupId>com.glazedlists</groupId>
+			<artifactId>glazedlists</artifactId>
+			<version>1.11.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.hsqldb/hsqldb -->
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>2.7.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.luaj</groupId>
+			<artifactId>luaj-jse</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea -->
+		<dependency>
+			<groupId>com.fifesoft</groupId>
+			<artifactId>rsyntaxtextarea</artifactId>
+			<version>3.3.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.fifesoft/autocomplete -->
+		<dependency>
+			<groupId>com.fifesoft</groupId>
+			<artifactId>autocomplete</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.fifesoft/spellchecker -->
+		<dependency>
+			<groupId>com.fifesoft</groupId>
+			<artifactId>spellchecker</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+		<dependency>
+		    <groupId>com.googlecode.json-simple</groupId>
+		    <artifactId>json-simple</artifactId>
+		    <version>1.1.1</version>
+		</dependency>
+
+
+	</dependencies>
+</project>
