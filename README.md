@@ -8,7 +8,7 @@ You can get the built verion of Informancer Forge on [Itch.io](https://inkusgame
 
 ## Some screen shots
 
-![Node View](https://img.itch.zone/aW1hZ2UvMjA2MzI2MS8xMjE3NDY1Ni5wbmc=/original/cUImmT.png))
+![Node View](https://img.itch.zone/aW1hZ2UvMjA2MzI2MS8xMjE3NDY1Ni5wbmc=/original/cUImmT.png)
 
 ![Design View](https://img.itch.zone/aW1hZ2UvMjA2MzI2MS8xMjE3NDY1NS5wbmc=/original/OVMqCQ.png)
 
