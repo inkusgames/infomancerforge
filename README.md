@@ -1,4 +1,4 @@
-# infomancerforge
+# Infomancer Forge
 
 Infomancer Forge is a tool to assist with any kind of game data the design, the capture and viewing the data's relationships.
 
