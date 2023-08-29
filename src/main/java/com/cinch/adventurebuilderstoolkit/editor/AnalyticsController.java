@@ -44,6 +44,8 @@ public class AnalyticsController {
 						System.out.println("Analytics on");
 						gameAnalytics=new GameAnalytics("0ffdca17867a34a0df76ffbb58652aa1", "b0e081e84c7e80dd9c4cd53622ca685075d2193f", 1);
 						base=GAEventBase.builder(gameAnalytics, config.getUserId(), config.getSessionNumber()).buildVersion(Config.version).connectionType(ConnectionType.UNKNOWN).limitAdTracking(true).build();
+						config.setSessionNumber(config.getSessionNumber()+1);
+						StorageUtilities.saveConfig();
 					} catch (InvalidKeyException | NoSuchAlgorithmException | IOException | ParseException e1) {
 						log.error(e1.getMessage(),e1);
 					}
