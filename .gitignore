@@ -18,7 +18,8 @@ buildNumber.properties
 
 .settings/*
 .analytics/*
-*.zip
+/*.zip
+
 
 build/*.exe
 
