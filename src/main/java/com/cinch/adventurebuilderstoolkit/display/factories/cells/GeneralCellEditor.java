@@ -10,9 +10,9 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 
 public abstract class GeneralCellEditor {
-	private CellType type;
-	private boolean selectable=true;
-	private boolean editable=true;
+	protected CellType type;
+	protected boolean selectable=true;
+	protected boolean editable=true;
 	private List<CellEditorListener> listeners=new ArrayList<>();
 	
 	public GeneralCellEditor(boolean selectable,boolean editable,CellType type) {

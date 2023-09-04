@@ -4,7 +4,7 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 
 public abstract class GeneralCellRenderer {
-	private CellType type;
+	protected CellType type;
 
 	public enum SpecialValues {
 		Mixed,

@@ -15,17 +15,19 @@ public class StringCellArrayElementLabelRenderer extends GeneralCellRenderer{
 	public StringCellArrayElementLabelRenderer(String text,CellType type) {
 		super(type);
 		this.text=text;
+		build();
 	}
 
+	private void build() {
+		label=new FlatLabel();
+		label.setFont(ImageUtilities.getFont(FontType.MonoRegular, 12));
+		label.setOpaque(true);
+		label.setHorizontalAlignment(FlatLabel.RIGHT);
+	}
+	
 	@Override
 	public JComponent getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		if (label==null) {
-			label=new FlatLabel();
-			label.setFont(ImageUtilities.getFont(FontType.MonoRegular, 12));
-			label.setOpaque(true);
-			label.setHorizontalAlignment(FlatLabel.RIGHT);
-		}
-		label.setText(text);//value==null?null:value.toString());
+		label.setText(text);
 		getType().adjustComponent(label);
 		return label;
 	}

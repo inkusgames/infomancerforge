@@ -2,17 +2,27 @@ package com.cinch.adventurebuilderstoolkit.editor.property;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DragSource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.ActivationDataFlavor;
+import javax.activation.DataHandler;
 import javax.swing.AbstractCellEditor;
+import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -22,6 +32,8 @@ import com.cinch.adventurebuilderstoolkit.display.factories.cells.GeneralCellEdi
 import com.cinch.adventurebuilderstoolkit.display.factories.cells.GeneralCellRenderer;
 import com.cinch.adventurebuilderstoolkit.display.factories.cells.GeneralCellRenderer.SpecialValues;
 import com.cinch.adventurebuilderstoolkit.editor.AdventureProjectModel;
+import com.cinch.adventurebuilderstoolkit.editor.property.gob.PropertyValuesGobInstance.GobInstanceArrayPropertyValue;
+import com.cinch.adventurebuilderstoolkit.editor.swing.Reorderable;
 import com.formdev.flatlaf.extras.components.FlatScrollPane;
 import com.formdev.flatlaf.extras.components.FlatTable;
 import com.formdev.flatlaf.ui.FlatTableCellBorder;
@@ -31,12 +43,12 @@ public class PropertyEditor extends JPanel {
 
 	private FlatTable table;
 	private FileGameObject fileGameObject;
-//	private DataInstance dataInstance;
-	
+	//	private DataInstance dataInstance;
+
 	private List<List<PropertyValue>> common=new ArrayList<>();
 	private PropertyEditorTableModel propertyEditorTableModel;
 	private AdventureProjectModel adventureProjectModel;
-	
+
 	public PropertyEditor(AdventureProjectModel adventureProjectModel) {
 		super(new BorderLayout());
 		this.adventureProjectModel=adventureProjectModel;
@@ -47,17 +59,17 @@ public class PropertyEditor extends JPanel {
 		this.fileGameObject=fileGameObject;
 		this.setPropertyValues(allProperties);
 	}
-//	
-//	public void setPropertyValues(DataInstance dataInstance, List<PropertyValues> allProperties) {
-//		this.dataInstance=dataInstance;
-//		this.setPropertyValues(allProperties);
-//	}
-//	
+	//	
+	//	public void setPropertyValues(DataInstance dataInstance, List<PropertyValues> allProperties) {
+	//		this.dataInstance=dataInstance;
+	//		this.setPropertyValues(allProperties);
+	//	}
+	//	
 	public void setPropertyValues(List<PropertyValues> allProperties) {
 		Map<String,Class<?>> commonFields=new LinkedHashMap<>();
 		Map<String,List<PropertyValue>> commonLists=new LinkedHashMap<>();
 		common.clear();
-		
+
 		System.out.println("Prop Start");
 		if (allProperties.size()>0) {
 			// Build first list
@@ -75,12 +87,12 @@ public class PropertyEditor extends JPanel {
 				for (var p:allProperties.get(t).getValues()) {
 					if (commonFields.containsKey(p.getKey())) {
 						System.out.println("Prop Common:"+p.getKey());
-						
+
 						rowFields.put(p.getKey(),p.getClass());
 						commonLists.get(p.getKey()).add(p);
 					}
 				}
-				
+
 				for (var k:commonFields.keySet()) {
 					if (!rowFields.containsKey(k)) {
 						System.out.println("Prop Remove 1:"+k);
@@ -94,13 +106,13 @@ public class PropertyEditor extends JPanel {
 		}
 		common=new ArrayList<>(commonLists.values());
 		common.sort(new PropertyValue.KeyComparator());
-//		common.sort(new Comparator<List<PropertyValue>>() {
-//			@Override
-//			public int compare(List<PropertyValue> o1, List<PropertyValue> o2) {
-//				return o1.get(0).getKey().compareTo(o2.get(0).getKey());
-//			}
-//			
-//		});
+		//		common.sort(new Comparator<List<PropertyValue>>() {
+		//			@Override
+		//			public int compare(List<PropertyValue> o1, List<PropertyValue> o2) {
+		//				return o1.get(0).getKey().compareTo(o2.get(0).getKey());
+		//			}
+		//			
+		//		});
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -112,42 +124,42 @@ public class PropertyEditor extends JPanel {
 		});
 	}
 
-	
 	private void build() {
 		propertyEditorTableModel=new PropertyEditorTableModel();
-		
+
 		table=new FlatTable();
 		table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 		table.setModel(propertyEditorTableModel);
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(true);
+		table.setDragEnabled(true);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setDropMode(DropMode.INSERT_ROWS);
+		table.setTransferHandler(new TableRowTransferHandler(table)); 
 
 		table.setDefaultEditor(Object.class, new PropertiesTableEditor());
 		table.setDefaultRenderer(Object.class, new PropertiesTableRenderer());
 
 		table.getColumnModel().getColumn(0).setPreferredWidth(80);
 		table.getColumnModel().getColumn(1).setPreferredWidth(200);
-		
+
 		FlatScrollPane pane=new FlatScrollPane();
 		pane.getViewport().add(table);
 		add(pane,BorderLayout.CENTER);
 	}
-	
+
 	public void change() {
 		if (fileGameObject!=null) {
 			adventureProjectModel.fireFileGameObjectChange(this ,fileGameObject);
 		}
-//		if (dataInstance!=null) {
-//			adventureProjectModel.fireDataInstanceChange(this, dataInstance);
-//		}
 	}
 
-	private class PropertyEditorTableModel extends AbstractTableModel {
+	private class PropertyEditorTableModel extends AbstractTableModel implements Reorderable{
 		private static final long serialVersionUID = 1L;
 
 		@Override
 		public int getRowCount() {
-//			System.out.println("Rows="+common.size());
+			//			System.out.println("Rows="+common.size());
 			return common.size();
 		}
 
@@ -163,16 +175,59 @@ public class PropertyEditor extends JPanel {
 			}
 			return "Value";
 		}
-		
+
 		@Override
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
 			return columnIndex==1;
 		}
 
 		@Override
+		public void reorder(int fromIndex, int toIndex, int size) {
+			if (size==1) {
+				var p1=common.get(fromIndex).get(0);
+				var p2=common.get(toIndex).get(0);
+				if (p1 instanceof GobInstanceArrayPropertyValue<?> p1g && p2 instanceof GobInstanceArrayPropertyValue<?> p2g) {
+					if (p1g.getArray()==p2g.getArray()) {
+						int nf=p1g.getArray().indexOf(common.get(fromIndex).get(0).getValue());
+						int nt=p1g.getArray().indexOf(common.get(toIndex).get(0).getValue());
+						for (int t=0;t<common.get(fromIndex).size();t++) {
+							GobInstanceArrayPropertyValue<?> array=(GobInstanceArrayPropertyValue<?>)common.get(fromIndex).get(0);
+							Collections.swap(array.getArray(),nf,nt);
+						}
+						fireTableRowsUpdated(fromIndex, fromIndex+size-1);
+						fireTableRowsUpdated(toIndex, toIndex+size-1);
+						
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								for (int t=0;t<common.get(fromIndex).size();t++) {
+									GobInstanceArrayPropertyValue<?> array=(GobInstanceArrayPropertyValue<?>)common.get(fromIndex).get(0);
+									array.changed();
+								}
+							}
+						});
+					}
+				}
+			}
+		}
+
+		@Override
+		public boolean reorderable(int fromIndex, int toIndex, int size) {
+			boolean can=false;
+			if (size==1) {
+				var p1=common.get(fromIndex).get(0);
+				var p2=common.get(toIndex).get(0);
+				if (p1 instanceof GobInstanceArrayPropertyValue<?> p1g && p2 instanceof GobInstanceArrayPropertyValue<?> p2g) {
+					can=p1g.getArray()==p2g.getArray();
+				}
+			}
+			return can;
+		}
+
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			if (columnIndex==0) {
-//				System.out.println("Name="+common.get(rowIndex).get(0).getName());
+				//				System.out.println("Name="+common.get(rowIndex).get(0).getName());
 				return common.get(rowIndex).get(0).getName();
 			} else {
 				// TODO: Find a better way to show that values don't match then empty
@@ -194,7 +249,7 @@ public class PropertyEditor extends JPanel {
 			if (getValueAt(rowIndex, columnIndex)!=SpecialValues.Mixed && aValue==SpecialValues.UnSet) {
 				aValue=null;
 			}
-			
+
 			if (columnIndex==1 && aValue!=SpecialValues.UnSet) {
 				for (var r:common.get(rowIndex)) {
 					// Test that this value has in fact changed
@@ -207,13 +262,13 @@ public class PropertyEditor extends JPanel {
 			}
 		}
 	}
-	
+
 	private class PropertiesTableEditor extends AbstractCellEditor implements TableCellEditor {
 		private static final long serialVersionUID = 1L;
 
 		private GeneralCellEditor currentEditor=null;
-		
-		
+
+
 		@Override
 		public Object getCellEditorValue() {
 			return currentEditor!=null?currentEditor.getCellEditorValue():null;
@@ -224,9 +279,9 @@ public class PropertyEditor extends JPanel {
 			currentEditor=common.get(row).get(0).getEditor();
 			return currentEditor.getTableCellEditorComponent(table, value, isSelected);
 		}
-		
+
 	}
-	
+
 	private class PropertiesTableRenderer extends DefaultTableCellRenderer {
 		private static final long serialVersionUID = 1L;
 
@@ -234,21 +289,21 @@ public class PropertyEditor extends JPanel {
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			JComponent component;
 			if (column==0) {
-				if (common.get(row).get(0).getLabelRenderer()!=null) {
-					component=common.get(row).get(0).getLabelRenderer().getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-					JComponent baseComponent=(JComponent)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-					component.setBackground(baseComponent.getBackground());
-					if (hasFocus) {
-						component.setBorder(new FlatTableCellBorder.Focused());
-					} else if (isSelected) {
-						component.setBorder(new FlatTableCellBorder.Selected());
-					} else {
-						component.setBorder(new FlatTableCellBorder.Default());
-					}
-					if (hasFocus && column==0) table.changeSelection(row,column+1,false,false);
-				}else {
-					component=(JComponent)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-				}
+				//				if (common.get(row).get(0).getLabelRenderer()!=null) {
+				//					component=common.get(row).get(0).getLabelRenderer().getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				//					JComponent baseComponent=(JComponent)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				//					component.setBackground(baseComponent.getBackground());
+				//					if (hasFocus) {
+				//						component.setBorder(new FlatTableCellBorder.Focused());
+				//					} else if (isSelected) {
+				//						component.setBorder(new FlatTableCellBorder.Selected());
+				//					} else {
+				//						component.setBorder(new FlatTableCellBorder.Default());
+				//					}
+				//					if (hasFocus && column==0) table.changeSelection(row,column+1,false,false);
+				//				}else {
+				component=(JComponent)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				//				}
 			}else {
 				component=common.get(row).get(0).getRenderer().getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				JComponent baseComponent=(JComponent)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -265,5 +320,84 @@ public class PropertyEditor extends JPanel {
 			return component;
 		}
 	}
-	
+	/**
+	 * Handles drag & drop row reordering
+	 */
+	public class TableRowTransferHandler extends TransferHandler {
+		private static final long serialVersionUID = 1L;
+		private final DataFlavor localObjectFlavor=new ActivationDataFlavor(Integer.class, "application/x-java-Integer;class=java.lang.Integer", "Integer Row Index");
+		private JTable table=null;
+
+		public TableRowTransferHandler(JTable table) {
+			this.table = table;
+		}
+
+		@Override
+		protected Transferable createTransferable(JComponent c) {
+			assert (c == table);
+			return new DataHandler((int)table.getSelectedRow(), localObjectFlavor.getMimeType());
+		}
+
+		@Override
+		public boolean canImport(TransferHandler.TransferSupport info) {
+			boolean b=false;
+			JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
+			int index = dl.getRow();
+			int max = table.getModel().getRowCount();
+			if (index < 0 || index >= max) {
+				index = max-1;
+			}
+			try {
+				Integer rowFrom = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
+				if (rowFrom != -1 && rowFrom != index) {
+					b=((Reorderable)table.getModel()).reorderable(rowFrom, index, 1);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			b = b && info.getComponent() == table && info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
+			table.setCursor(b ? DragSource.DefaultMoveDrop : DragSource.DefaultMoveNoDrop);
+			return b;
+		}
+
+		@Override
+		public int getSourceActions(JComponent c) {
+			return TransferHandler.COPY_OR_MOVE;
+		}
+
+		@Override
+		public boolean importData(TransferHandler.TransferSupport info) {
+			JTable target = (JTable) info.getComponent();
+			JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
+			int index = dl.getRow();
+			int max = table.getModel().getRowCount();
+			if (index < 0 || index > max) {
+				index = max;
+			}
+			target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			try {
+				Integer rowFrom = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
+				if (rowFrom != -1 && rowFrom != index) {
+					((Reorderable)table.getModel()).reorder(rowFrom, index, 1);
+					if (index > rowFrom) {
+						index--;
+					}
+					target.getSelectionModel().addSelectionInterval(index, index);
+					return true;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+
+		@Override
+		protected void exportDone(JComponent c, Transferable t, int act) {
+			if ((act == TransferHandler.MOVE) || (act == TransferHandler.NONE)) {
+				table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		}
+
+	}
 }

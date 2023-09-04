@@ -24,7 +24,6 @@ import com.cinch.adventurebuilderstoolkit.display.factories.cells.IntegerCellEdi
 import com.cinch.adventurebuilderstoolkit.display.factories.cells.IntegerCellRenderer;
 import com.cinch.adventurebuilderstoolkit.display.factories.cells.LabelCellNonEdit;
 import com.cinch.adventurebuilderstoolkit.display.factories.cells.NamedResourceCellRenderer;
-import com.cinch.adventurebuilderstoolkit.display.factories.cells.StringCellArrayElementLabelRenderer;
 import com.cinch.adventurebuilderstoolkit.display.factories.cells.StringCellEditor;
 import com.cinch.adventurebuilderstoolkit.display.factories.cells.StringCellRenderer;
 import com.cinch.adventurebuilderstoolkit.editor.AdventureProjectModel;
@@ -156,54 +155,75 @@ public class PropertyValuesGobInstance extends PropertyValues{
 	
 	private GeneralCellEditor getGeneralCellEditor(GOBPropertyDefinition gobPropertyDefinition) {
 		CellType type=gobPropertyDefinition.isArray()?CellType.ArrayItem:CellType.Normal;
+		GeneralCellEditor generalCellEditor=new LabelCellNonEdit(type);
 		switch (gobPropertyDefinition.getType()) {
 //		case Audio:
 //			break;
 		case Boolean:
-			return new BooleanCellEditor(type);
+			generalCellEditor=new BooleanCellEditor(type);
+			break;
 		case Float:
-			return new DoubleCellEditor(type,gobPropertyDefinition.getPrecision());
+			generalCellEditor=new DoubleCellEditor(type,gobPropertyDefinition.getPrecision());
+			break;
 		case GOB:
-			return new ComboBoxNamedResourceCellEditor<GOBInstance>(adventureProjectModel,GOBInstance.class,gobPropertyDefinition.getGobType(),type);
+			generalCellEditor=new ComboBoxNamedResourceCellEditor<GOBInstance>(adventureProjectModel,GOBInstance.class,gobPropertyDefinition.getGobType(),type);
+			break;
 		case ID:
-			return new StringCellEditor(type);
+			generalCellEditor=new StringCellEditor(type);
+			break;
 //		case Image:
 //			break;
 		case Integer:
-			return new IntegerCellEditor(type);
+			generalCellEditor=new IntegerCellEditor(type);
+			break;
 		case String:
-			return new StringCellEditor(type);
+			generalCellEditor=new StringCellEditor(type);
+			break;
 		default:
 			log.warn("Type "+gobPropertyDefinition.getType()+" not catered for in properties editor.");
 			break;
 		}
-		return new LabelCellNonEdit(type); 
+		if (gobPropertyDefinition.isArray()) {
+			//generalCellEditor=new ArrayCellEditorWrapper(generalCellEditor);
+		}
+		return generalCellEditor;
 	}
 
 	private GeneralCellRenderer getGeneralCellRenderer(GOBPropertyDefinition gobPropertyDefinition) {
 		CellType type=gobPropertyDefinition.isArray()?CellType.ArrayItem:CellType.Normal;
+		GeneralCellRenderer generalCellRenderer=new StringCellRenderer(type);
+
 		switch (gobPropertyDefinition.getType()) {
 //		case Audio:
 //			break;
 		case Boolean:
-			return new BooleanCellRenderer(type);
+			generalCellRenderer=new BooleanCellRenderer(type);
+			break;
 		case Float:
-			return new DoubleCellRenderer(type,gobPropertyDefinition.getPrecision());
+			generalCellRenderer= new DoubleCellRenderer(type,gobPropertyDefinition.getPrecision());
+			break;
 		case GOB:
-			return new NamedResourceCellRenderer<>(type);
+			generalCellRenderer= new NamedResourceCellRenderer<>(type);
+			break;
 		case ID:
-			return new StringCellRenderer(type);
+			generalCellRenderer= new StringCellRenderer(type);
+			break;
 //		case Image:
 //			break;
 		case Integer:
-			return new IntegerCellRenderer(type);
+			generalCellRenderer= new IntegerCellRenderer(type);
+			break;
 		case String:
-			return new StringCellRenderer(type);
+			generalCellRenderer= new StringCellRenderer(type);
+			break;
 		default:
 			log.warn("Type "+gobPropertyDefinition.getType()+" not catered for in properties editor.");
 			break;
 		}
-		return new StringCellRenderer(type); 
+		if (gobPropertyDefinition.isArray()) {
+			//generalCellRenderer=new ArrayCellRendererWrapper(generalCellRenderer);
+		}
+		return generalCellRenderer; 
 	}
 	@Override
 	public List<PropertyValue> getValues() {
@@ -271,7 +291,7 @@ public class PropertyValuesGobInstance extends PropertyValues{
 		}
 	}
 	
-	class GobInstanceArrayPropertyValue<type> extends PropertyValue {
+	public class GobInstanceArrayPropertyValue<type> extends PropertyValue {
 		@SuppressWarnings("unused")
 		private GOBPropertyDefinition gobPropertyDefinition;
 		private List<type> values;
@@ -279,7 +299,8 @@ public class PropertyValuesGobInstance extends PropertyValues{
 		
 		@SuppressWarnings("unchecked")
 		public GobInstanceArrayPropertyValue(GOBPropertyDefinition gobPropertyDefinition,int pos,List<?> values, Class<type> forClass) {
-			super(gobPropertyDefinition.getName()+"["+ImageUtilities.formatNumberWithLead(pos,values!=null?((List<?>)values).size():0)+"]",gobPropertyDefinition.getName(), getGeneralCellEditor(gobPropertyDefinition),getGeneralCellRenderer(gobPropertyDefinition),new StringCellArrayElementLabelRenderer("["+ImageUtilities.formatNumberWithLead(pos,values!=null?((List<?>)values).size():0)+"]",CellType.ArrayItem),forClass);
+//			super(gobPropertyDefinition.getName()+"["+ImageUtilities.formatNumberWithLead(pos,values!=null?((List<?>)values).size():0)+"]",gobPropertyDefinition.getName(), getGeneralCellEditor(gobPropertyDefinition),getGeneralCellRenderer(gobPropertyDefinition),new StringCellArrayElementLabelRenderer("["+ImageUtilities.formatNumberWithLead(pos,values!=null?((List<?>)values).size():0)+"]",CellType.ArrayItem),forClass);
+			super(gobPropertyDefinition.getName()+"["+ImageUtilities.formatNumberWithLead(pos,values!=null?((List<?>)values).size():0)+"]",gobPropertyDefinition.getName(), getGeneralCellEditor(gobPropertyDefinition),getGeneralCellRenderer(gobPropertyDefinition),forClass);
 			this.gobPropertyDefinition=gobPropertyDefinition;
 			this.values=(List<type>)values;
 			this.pos=pos;
@@ -295,6 +316,14 @@ public class PropertyValuesGobInstance extends PropertyValues{
 		public void setValue(Object value) {
 			this.values.set(pos, (type)value);
 			changed();
+		}
+		
+		public List<type> getArray(){
+			return values;
+		}
+		
+		public void changed(){
+			PropertyValuesGobInstance.this.changed();
 		}
 	}
 }
