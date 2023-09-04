@@ -83,7 +83,7 @@ function buildObjLuaTable(object,fields,meta,currentTable)
 end
 
 -- Bind the enum of GOBPropertyDefinition.Type
-local gobPropertyTypes = luajava.bindClass("com.cinch.adventurebuilderstoolkit.beans.gobs.GOBPropertyDefinition$Type")
+local gobPropertyTypes = luajava.bindClass("com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition$Type")
 
 -- List of fields available in a gob record
 local gobPropertyDefinitionFields={
@@ -113,7 +113,7 @@ function buildPropertyDefinition(p)
 end
 
 -- Bind the enum of GOB.Type
-local gobTypes = luajava.bindClass("com.cinch.adventurebuilderstoolkit.beans.gobs.GOB$Type")
+local gobTypes = luajava.bindClass("com.inkus.infomancerforge.beans.gobs.GOB$Type")
 
 -- List of fields available in a gob record
 local gobFields={

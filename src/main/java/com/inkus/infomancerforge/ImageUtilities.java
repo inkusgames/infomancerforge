@@ -89,7 +89,7 @@ public class ImageUtilities {
 	public static int VIEW_GOB_FIELD_SIZE=11;
 	public static int VIEW_GOB_ARRAY_SIZE=8;
 
-	public static String BASE_PATH="com/cinch/adventurebuilderstoolkit/icons/";
+	public static String BASE_PATH="com/inkus/infomancerforge/icons/";
 	public static String ICON_LUA=BASE_PATH+"lua.svg";
 
 	public static final Image getImage(String key) {

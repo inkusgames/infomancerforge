@@ -116,9 +116,9 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 				globals.STDOUT=luaPrintStream;
 				
 				globals.set("environment", CoerceJavaToLua.coerce(new LuaEnvironment()));
-				globals.load(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/cinch/adventurebuilderstoolkit/lua/lua5.2.lua")), "lua5.2.lua").call();
-				globals.load(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/cinch/adventurebuilderstoolkit/lua/modules.lua")), "modules.lua").call();
-				globals.load(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/cinch/adventurebuilderstoolkit/lua/gobs.lua")), "gobs.lua").call();
+				globals.load(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/inkus/infomancerforge/lua/lua5.2.lua")), "lua5.2.lua").call();
+				globals.load(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/inkus/infomancerforge/lua/modules.lua")), "modules.lua").call();
+				globals.load(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream("com/inkus/infomancerforge/lua/gobs.lua")), "gobs.lua").call();
 			} catch (UnsupportedEncodingException e) {
 				ErrorUtilities.showFatalException(e);
 			}
