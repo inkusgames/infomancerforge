@@ -102,14 +102,7 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 				LoadState.install(globals);
 				LuaC.install(globals);
 				globals.load(new DebugLib());
-//				sethook = globals.get("debug").get("sethook");
 				globals.set("debug", LuaValue.NIL);
-
-//				hookfunc = new ZeroArgFunction() {
-//					public LuaValue call() {
-//						throw new Error("Script overran resource limits.");
-//					}
-//				};
 		    	
 		    	luaStdOutputStream = new OutputStreamLimitedDocument(128*1024, 512);
 				luaPrintStream = new PrintStream(luaStdOutputStream, true, "utf-8");
@@ -126,7 +119,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 	}
 
 	public void loadAllCurrent() {
-		System.out.println("Loading all ****************************************************");
 		for (SourceCode sourceFile:adventureProjectModel.getNamedResourceModel(SourceCode.class)) {
 			if (sourceFile.getExtension().equals("lua")) {
 				try {
@@ -137,7 +129,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 				}
 			}
 		}
-		System.out.println("Loading all done ***********************************************");
 	}
 
 	public Document getStdOutDocument() {
@@ -146,7 +137,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 	
 	public boolean isModule(SourceCode sourceCode) {
 		String path=FilenameUtils.separatorsToUnix(sourceCode.getUuid().toLowerCase());
-//		System.out.println(sourceCode.getUuid());
 		return path.startsWith("modules/") || path.indexOf("/modules/")!=-1;
 	}
 
@@ -204,13 +194,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 			// TODO: Use visitor to build a token lexicon. Editors can borrows from the ones required and use there own too.
 			chunk.accept( new Visitor() {
 				public void visit(Exp.NameExp exp) {
-//					System.out.println("Name in use: "+exp.name.name
-//						+" line "+exp.beginLine
-//						+" col "+exp.beginColumn
-//						+" func "+exp.isfunccall()
-//						+" vararg "+exp.isvarargexp()
-//						+" var "+exp.isvarexp()
-//						);
 				}
 			});
 		} catch (TokenMgrError|ParseException e) {
@@ -226,26 +209,9 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 		
 		return null;
 	}
-//	
-//	private LuaValue sethook;
-//	private LuaValue hookfunc;
 
 	private LuaValue executeLuaScript(String name, String script) throws LuaError {
 		System.out.println("Attempted Execution:"+name);
-/*
-		LuaValue chunk = globals.load(script, name, globals);
-		LuaThread thread = new LuaThread(globals, chunk);
-
-		final int instruction_count = Integer.MAX_VALUE;
-		sethook.invoke(LuaValue.varargsOf(
-				new LuaValue[] { thread, hookfunc, LuaValue.EMPTYSTRING, LuaValue.valueOf(instruction_count) }));
-		System.out.println("Executing:"+name);
-		return thread.resume(LuaValue.NIL);*/
-		
-//		LuaValue chunk = globals.load(script, name, globals);
-//		chunk.invoke();
-//		return chunk.eval();
-		
 		return  globals.load(script, name, globals).call();
 	}
 	
@@ -281,32 +247,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 			clearLuaSwingActionGroup(name);
 			
 			result=executeLuaScript(name, lua);
-//			if (!result.checkboolean(1)) {
-//				for (int t=1;t<=result.narg();t++) {
-//					var o=result.arg(t);
-//					System.out.println("Arg:["+t+"]="+o.getClass().getName());
-//					System.out.println("Arg:["+t+"] value="+o.toString());
-//				}
-//				throw new LuaErrorReader(name,result);
-//			}
-			
-//				if (!result.checkboolean(1)) {
-//					String error = result.tojstring(2);
-////					int marker = error==null?-1:error.lastIndexOf(":");
-//					throw new LuaError(error);
-////					if (marker != -1) {
-////						throw new LUAScriptError(
-////								Integer.parseInt(error.substring(marker + 1, error.indexOf(" ", marker))) - 1,
-////								name, error,0,0);
-////					} else {
-////						throw new LUAScriptError(0, name, error,0,0);
-////					}
-//				}
-////				try {
-////					luaStdOutputStream.write(("Executed:"+name+"\n").getBytes());
-////				} catch (IOException e) {
-////					log.error(e.getMessage(),e);
-////				}
 		} catch (LuaError luaError) {
 			try {
 				luaStdOutputStream.write((luaError.getMessage()+"\n").getBytes());
@@ -314,24 +254,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 				log.error(e.getMessage(),e);
 			}
 			log.warn(luaError.getMessage(),luaError);
-//				String error=luaError.getMessage();
-//				
-//				if (error.startsWith("[string \"")) {
-//					error=error.substring(error.indexOf("\"]:")+3);
-//				} else {
-//					error=error.substring(error.indexOf(":")+1);
-//				}
-//				
-//				int numberEnds=error.indexOf(":");
-//				if (numberEnds==-1) {
-//					numberEnds=error.indexOf(" ");
-//				}
-			
-//				throw new ScriptCompileError(Integer.parseInt(error.substring(0, numberEnds))-1, name, error.substring(numberEnds+1).trim(),-1,-1);
-//				log.warn(luaError.getMessage());
-//				System.out.println(luaError.getMessage());
-//				String[] parts = luaError.getMessage().split(":");
-//				throw new LUAScriptError(Integer.parseInt(parts[1]) - 1, parts[0], luaError.getMessage(),0,0);
 			throw luaError;
 		} finally {
 			currentScript.pop();
@@ -348,33 +270,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 				clearLuaSwingActionGroup(name);
 				
 				result=function.call();
-//				if (!result.checkboolean(1)) {
-//					String error = result.tojstring(2);
-//					int marker = error==null?-1:error.lastIndexOf(":");
-//					if (marker != -1) {
-//						return new ScriptCompileError(
-//								Integer.parseInt(error.substring(marker + 1, error.indexOf(" ", marker))) - 1,
-//								name, error);
-//					} else {
-//						return new ScriptCompileError(0, name, error);
-//					}
-//				}
-//			} catch (LuaError luaError) {
-////				log.error(luaError.getMessage(),luaError);
-////				String error=luaError.getMessage();
-////				
-////				if (error.startsWith("[string \"")) {
-////					error=error.substring(error.indexOf("\"]:")+3);
-////				} else {
-////					error=error.substring(error.indexOf(":")+1);
-////				}
-////				
-////				int numberEnds=error.indexOf(":");
-////				if (numberEnds==-1) {
-////					numberEnds=error.indexOf(" ");
-////				}
-////				
-//				throw new LUAScriptError(luaError,name);//Integer.parseInt(error.substring(0, numberEnds))-1, name, error.substring(numberEnds+1).trim(),-1,-1);
 			} catch (LuaError luaError) {
 				// find sourcecode.
 				String description=luaError.getMessage();
@@ -412,7 +307,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 		try {
 			LuaValue instance=globals.get("buildInstance").call(CoerceJavaToLua.coerce(gobInstance));
 
-//			System.out.println("return function(self) return "+lua+" end");
 			var v=globals.load("return function(self) return "+lua+" end", "View Summary", globals).call().invoke(instance);
 
 			return v.tojstring();
@@ -599,41 +493,34 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 			System.out.println("Ednter get module:"+name);
 			LuaTable module=modules.get(name);
 			if (module==null) {
-//				synchronized (this) {
-//					if (module==null) {
-						var model=adventureProjectModel.getNamedResourceModel(SourceCode.class);
-						System.out.println("moel size:"+model.size());
-						for (var sourceCode:model) {
-							System.out.println("sc:"+sourceCode.getName());
-//							System.out.println("sc ext:"+sourceCode.getExtension());
-//							System.out.println("sc module?:"+isModule(sourceCode));
-//							System.out.println("sc module name:"+getModuleName(sourceCode));
-							if ("lua".equalsIgnoreCase(sourceCode.getExtension()) && isModule(sourceCode) && getModuleName(sourceCode).equals(name)) {
-								//System.out.println("sc[module]:"+sourceCode.getName());
-								System.out.println("sc[module]:"+sourceCode.getName()+";"+sourceCode.getUuid());
-								if (module!=null) {
-									// TODO: See if you can create a better error
-									System.out.println("executing:"+currentlyExecuting.getName());
-									throw new LUAScriptError(0,currentlyExecuting.getName(),"The module '"+name+"' is defined in more then one place.",-1,-1); 
-								} else {
-									LuaValue result=execute(sourceCode);
-									if (result.istable()) {
-										System.out.println("Getting table for "+name);
-										module=result.checktable();
-									} else {
-										throw new LUAScriptError(0,currentlyExecuting.getName(),"The module '"+name+"' is defined but when executed does not return a table.",-1,-1); 
-									}
-								}
+				var model=adventureProjectModel.getNamedResourceModel(SourceCode.class);
+				System.out.println("moel size:"+model.size());
+				for (var sourceCode:model) {
+					System.out.println("sc:"+sourceCode.getName());
+					if ("lua".equalsIgnoreCase(sourceCode.getExtension()) && isModule(sourceCode) && getModuleName(sourceCode).equals(name)) {
+						//System.out.println("sc[module]:"+sourceCode.getName());
+						System.out.println("sc[module]:"+sourceCode.getName()+";"+sourceCode.getUuid());
+						if (module!=null) {
+							// TODO: See if you can create a better error
+							System.out.println("executing:"+currentlyExecuting.getName());
+							throw new LUAScriptError(0,currentlyExecuting.getName(),"The module '"+name+"' is defined in more then one place.",-1,-1); 
+						} else {
+							LuaValue result=execute(sourceCode);
+							if (result.istable()) {
+								System.out.println("Getting table for "+name);
+								module=result.checktable();
+							} else {
+								throw new LUAScriptError(0,currentlyExecuting.getName(),"The module '"+name+"' is defined but when executed does not return a table.",-1,-1); 
 							}
 						}
-						
-						if (module!=null) {
-							modules.put(name,module);
-						} else {
-							throw new LUAScriptError(0,currentlyExecuting.getName(),"The module '"+name+"' can not be found in the system.",-1,-1); 
-						}
-//					}	
-//				}
+					}
+				}
+				
+				if (module!=null) {
+					modules.put(name,module);
+				} else {
+					throw new LUAScriptError(0,currentlyExecuting.getName(),"The module '"+name+"' can not be found in the system.",-1,-1); 
+				}
 			}
 			
 			// Make sure we know of this reference
@@ -649,7 +536,6 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 		}
 		
 		public boolean addAction(LuaTable details) {
-//			System.out.println("Add action called %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 			LuaSwingAction action=new LuaSwingAction(adventureProjectModel);
 			pushTableIntoBean(details, action);
 			if (action.isOk()) {
