@@ -306,9 +306,14 @@ public class ProjectPluginsDialog extends JDialog {
 			}
 			if (downloadsHappening==0) {
 				// Refresh full tree node
-				adventureProjectModel.refreshFiles();
-				adventureProjectModel.getAdventureLuaEnviroment().loadAllCurrent();
-				adventureProjectModel.saveAll();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						adventureProjectModel.refreshFiles();
+						adventureProjectModel.getAdventureLuaEnviroment().loadAllCurrent();
+						adventureProjectModel.saveAll();
+					}
+				});
 			}
 		}
 

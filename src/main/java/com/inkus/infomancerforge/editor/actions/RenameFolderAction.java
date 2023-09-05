@@ -67,7 +67,6 @@ public class RenameFolderAction extends BaseAction implements TreeActionInterfac
 							newName=null;
 						} else {
 							// Rename file
-//							String ext=FilenameUtils.getExtension(projectFileTreeNode.getFile().getName());
 							File oldFile=projectFileTreeNode.getFile();
 							File destFile=new File(projectFileTreeNode.getFile().getParentFile().getAbsolutePath()+"/"+newName);
 							if (destFile.exists()) {
@@ -105,30 +104,7 @@ public class RenameFolderAction extends BaseAction implements TreeActionInterfac
 								} catch (IOException e1) {
 									ErrorUtilities.showSeriousException(e1);
 								}
-								
-//									if (projectFileTreeNode.renameFileResource(destFile)) {
-//									projectFileTreeNode.setFile(destFile);
-//									// Refresh tree
-//									if (projectFileTreeNode.getNamedResource() instanceof FileGameObject fileGameObject) {
-//										SwingUtilities.invokeLater(new Runnable() {
-//											@Override
-//											public void run() {
-//												adventureProjectModel.getFileNodesMap().remove(oldFile.getAbsolutePath());
-//												adventureProjectModel.getFileNodesMap().put(destFile.getAbsolutePath(),projectFileTreeNode);
-//												adventureProjectModel.fireFileGameObjectChange(this, fileGameObject);
-//												adventureProjectModel.refreshFiles();
-//											}
-//										});
-//									}
-//									newName=null;
-//								} else {
-//									JOptionPane.showMessageDialog((Component)e.getSource(), "There was a unexpected issue renaming the file.", "Unable to rename file.", JOptionPane.WARNING_MESSAGE);
-//								}
 							}
-							
-//							projectFileTreeNode.getFile().renameTo(null)
-							// Update filetree
-							// Update any views that had the old file
 						}
 					} else {
 						JOptionPane.showMessageDialog((Component)e.getSource(), "Please enter a valid filename.", "Unable to rename file.", JOptionPane.WARNING_MESSAGE);
@@ -136,24 +112,7 @@ public class RenameFolderAction extends BaseAction implements TreeActionInterfac
 				}
 				
 			} while (newName!=null);
-//			String newName=JOptionPane.showInputDialog((Component)e.getSource(), "Enter the new name for "+projectFileTreeNode.getName() , "New Name", JOptionPane.OK_CANCEL_OPTION);
-//			if (JOptionPane.showConfirmDialog((Component)e.getSource(), "Are you sure you want to delete '"+projectFileTreeNode.getName()+"'. This can not be undone.", "Confirm Delete!", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-//				if (projectFileTreeNode.getFile().delete()) {
-//					if (projectFileTreeNode instanceof ProjectGobTreeNode) {
-//						adventureProjectModel.getAnalyticsController().sendEvent("GOB", "Delete", null);
-//					}
-//					if (projectFileTreeNode instanceof ProjectViewTreeNode) {
-//						adventureProjectModel.getAnalyticsController().sendEvent("View", "Delete", null);
-//					}
-//					if (projectFileTreeNode instanceof ProjectSourceCodeTreeNode) {
-//						adventureProjectModel.getAnalyticsController().sendEvent("Script", "Delete", null);
-//					}
-//					
-//					adventureProjectModel.removeFileNode(projectFileTreeNode);
-//				} else {
-//					JOptionPane.showMessageDialog((Component)e.getSource(), "Unable to delete this file.", "Unable to delete file.", JOptionPane.WARNING_MESSAGE);
-//				}
-//			}
+
 		}
 	}
 	

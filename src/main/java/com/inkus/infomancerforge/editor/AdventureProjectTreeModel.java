@@ -23,6 +23,9 @@ public class AdventureProjectTreeModel extends DefaultTreeModel implements FileG
 
 	private AdventureProjectModel adventureProjectModel;
 
+	private ProjectFileTreeNode pluginTreeNode=null;
+	private ProjectFileTreeNode moduleTreeNode=null;
+
 	private FlatTree tree;
 	
 	public AdventureProjectTreeModel(AdventureProjectModel adventureProjectModel) {
@@ -152,37 +155,46 @@ public class AdventureProjectTreeModel extends DefaultTreeModel implements FileG
 	public TreeNode findTreeNodeForFile(File file) {
 		return findTreeNodeForFile((ProjectTreeNode) getRoot(),file);
 	}
-
-	public ProjectFileTreeNode findPluginTreeNode(boolean create) {
-		synchronized (this) {
-			File file=new File(adventureProjectModel.getProject().getPath()+"/Plugins/");
-			if (!file.exists() && create) {
-				file.mkdirs();
-				ProjectFileTreeNode treeNode=new ProjectFileTreeNode(adventureProjectModel, (ProjectTreeNode) getRoot(), file);
-				adventureProjectModel.addFileNode((ProjectTreeNode) getRoot(), treeNode);
-				return treeNode;
-			} else {
-				return (ProjectFileTreeNode)findTreeNodeForFile((ProjectTreeNode) getRoot(),file);	
-			}
-		}
-	}
 	
-	public ProjectFileTreeNode findModuleTreeNode(boolean create) {
-		synchronized (this) {
-			ProjectFileTreeNode pluginsNode=findPluginTreeNode(create);
-			if (pluginsNode!=null) {
-				File file=new File(pluginsNode.getFile().getAbsolutePath()+"/Modules/");
-				if (!file.exists() && create) {
-					file.mkdirs();
-					ProjectFileTreeNode treeNode=new ProjectFileTreeNode(adventureProjectModel, pluginsNode, file);
-					adventureProjectModel.addFileNode(pluginsNode, treeNode);
-					return treeNode;
-				} else {
-					return (ProjectFileTreeNode)findTreeNodeForFile(pluginsNode,file);	
+	public ProjectFileTreeNode findPluginTreeNode(boolean create) {
+		if (pluginTreeNode==null) {
+			synchronized (this) {
+				if (pluginTreeNode==null) {
+					File file=new File(adventureProjectModel.getProject().getPath()+"/Plugins/");
+					if (!file.exists() && create) {
+						file.mkdirs();
+						ProjectFileTreeNode treeNode=new ProjectFileTreeNode(adventureProjectModel, (ProjectTreeNode) getRoot(), file);
+						adventureProjectModel.addFileNode((ProjectTreeNode) getRoot(), treeNode);
+						pluginTreeNode=treeNode;
+					} else {
+						pluginTreeNode=(ProjectFileTreeNode)findTreeNodeForFile((ProjectTreeNode) getRoot(),file);	
+					}
 				}
 			}
 		}
-		return null;
+		return pluginTreeNode;
+	}
+	
+	public ProjectFileTreeNode findModuleTreeNode(boolean create) {
+		if (moduleTreeNode==null) {
+			synchronized (this) {
+				if (moduleTreeNode==null) {
+					ProjectFileTreeNode pluginsNode=findPluginTreeNode(create);
+					if (pluginsNode!=null) {
+						File file=new File(pluginsNode.getFile().getAbsolutePath()+"/Modules/");
+						if (!file.exists() && create) {
+							file.mkdirs();
+							ProjectFileTreeNode treeNode=new ProjectFileTreeNode(adventureProjectModel, pluginsNode, file);
+							adventureProjectModel.addFileNode(pluginsNode, treeNode);
+							moduleTreeNode=treeNode;
+						} else {
+							moduleTreeNode=(ProjectFileTreeNode)findTreeNodeForFile(pluginsNode,file);	
+						}
+					}
+				}
+			}			
+		}
+		return moduleTreeNode;
 	}
 
 	private TreeNode findTreeNodeForFile(TreeNode node,File file) {
