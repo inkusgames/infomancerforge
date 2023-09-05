@@ -1,6 +1,7 @@
 package com.inkus.infomancerforge.editor.treenodes;
 
 import java.io.File;
+import java.util.UUID;
 
 import javax.swing.tree.TreeNode;
 
@@ -19,6 +20,19 @@ public class ProjectSourceCodeTreeNode extends ProjectFileTreeNamedResourceNode 
 		super(adventureProjectModel, parent, file);
 		load();
 	}
+	
+	public boolean renameFileResource(File tofile) {
+		String oldProjectPath=getFile().getAbsolutePath().substring(adventureProjectModel.getProject().getPath().length());
+		String newProjectPath=tofile.getAbsolutePath().substring(adventureProjectModel.getProject().getPath().length());
+		adventureProjectModel.getProject().getResources().remove(oldProjectPath);
+		adventureProjectModel.getProject().getResources().put(newProjectPath,sourceCode.getUuid());
+		
+		return sourceCode.renameFileResource(tofile);
+	}
+	
+	public String getFileResourceName() {
+		return sourceCode.getFileResourceName();
+	}
 
 	public boolean holdsFileGameObject(FileGameObject fileGameObject) {
 		return fileGameObject==sourceCode;
@@ -29,7 +43,13 @@ public class ProjectSourceCodeTreeNode extends ProjectFileTreeNamedResourceNode 
 	}
 	
 	private void load() {
-		sourceCode=StorageUtilities.loadSourceCode(getFile().getAbsolutePath(),adventureProjectModel.getProject().getPath());
+		String projectPath=getFile().getAbsolutePath().substring(adventureProjectModel.getProject().getPath().length());
+		String uuid=adventureProjectModel.getProject().getResources().get(projectPath);
+		if (uuid==null || uuid.length()==0) {
+			uuid=UUID.randomUUID().toString();
+			adventureProjectModel.getProject().getResources().put(projectPath,uuid);
+		}
+		sourceCode=StorageUtilities.loadSourceCode(getFile().getAbsolutePath(),adventureProjectModel.getProject().getPath(),uuid);
 	}
 	
 	public String getName() {

@@ -50,7 +50,7 @@ public class ProjectPluginsAction extends BaseAction implements TreeActionInterf
 	}
 
 	public boolean onlySuitableForSingleSelections() {
-		return true;
+		return false;
 	}
 
 }

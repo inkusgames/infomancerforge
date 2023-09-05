@@ -27,6 +27,7 @@ import com.inkus.infomancerforge.editor.actions.CreateViewAction;
 import com.inkus.infomancerforge.editor.actions.DeleteFileAction;
 import com.inkus.infomancerforge.editor.actions.DeleteFolderAction;
 import com.inkus.infomancerforge.editor.actions.OpenProjectFileAction;
+import com.inkus.infomancerforge.editor.actions.RenameFileAction;
 import com.inkus.infomancerforge.editor.actions.SaveProjectAction;
 import com.inkus.infomancerforge.editor.actions.TreeActionInterface;
 import com.inkus.infomancerforge.editor.swing.DockablePanel;
@@ -70,6 +71,9 @@ public class ProjectControllerActionManager implements MouseListener, FileGameOb
 		
 		// File Stuff
 		actions.add(new CreateNewFolder(adventureProjectModel));
+		actions.add(null);
+		// File rename Stuff
+		actions.add(new RenameFileAction(adventureProjectModel));
 		actions.add(null);
 		// File delete Stuff
 		actions.add(new DeleteFileAction(adventureProjectModel));
@@ -140,6 +144,17 @@ public class ProjectControllerActionManager implements MouseListener, FileGameOb
 				if (dockable!=null) {
 					var editor = new DefaultSingleCDockable(dockable.getPersistentId(), dockable.getIcon(), dockable.getTitle(), dockable);
 					editor.setCloseable(true);
+//					
+//					if (treeNode instanceof ProjectFileTreeNamedResourceNode projectFileTreeNamedResourceNode) {
+//						System.out.println("Title Listener="+projectFileTreeNamedResourceNode.getName());
+//						adventureProjectModel.addFileGameObjectChangeListener(new FileGameObjectChangeListener() {
+//							@Override
+//							public void fileGameObjectChanged(Object source, FileGameObject fileGameObject) {
+//								System.out.println("Title="+projectFileTreeNamedResourceNode.getName());
+//								editor.setTitleText(projectFileTreeNamedResourceNode.getName());
+//							}
+//						});
+//					}
 					
 					work.show(editor);
 					editor.toFront();
@@ -204,11 +219,13 @@ public class ProjectControllerActionManager implements MouseListener, FileGameOb
 					boolean available=paths.length>0;
 					for (TreePath treePath:paths) {
 						TreeNode node=(TreeNode)treePath.getLastPathComponent();
-						available=treeAction.canProcess(node);
+						available&=treeAction.canProcess(node);
 						if (!available) {
 							break;
 						}
 					}
+					
+					available&=paths.length==1 || !treeAction.onlySuitableForSingleSelections();
 					
 					if (available) {
 						if (seenNull) {

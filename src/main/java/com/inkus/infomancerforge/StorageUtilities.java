@@ -95,6 +95,7 @@ public class StorageUtilities {
 		if (gobFile.exists()) {
 			try (Reader reader = new FileReader(gobFile)){
 				gob=gson.fromJson(reader, GOB.class);
+				gob.setMyFile(gobFile);
 			} catch (JsonSyntaxException | JsonIOException | IOException e) {
 				// TODO: Does this really need to be a fatal exception?
 				log.error("Unable to load GOB from file '"+path+"'");
@@ -110,6 +111,7 @@ public class StorageUtilities {
 		if (viewFile.exists()) {
 			try (Reader reader = new FileReader(viewFile)){
 				view=gson.fromJson(reader, View.class);
+				view.setMyFile(viewFile);
 			} catch (JsonSyntaxException | JsonIOException | IOException e) {
 				// TODO: Does this really need to be a fatal exception?
 				ErrorUtilities.showFatalException(e);
@@ -118,17 +120,17 @@ public class StorageUtilities {
 		return view;
 	}
 
-	public static SourceCode loadSourceCode(String path,String basePath) {
+	public static SourceCode loadSourceCode(String path,String basePath,String uuid) {
 		File sourceCodeFile=new File(path);
 		SourceCode sourceCode=null;
 		if (sourceCodeFile.exists()) {
 			try (Reader reader = new FileReader(sourceCodeFile)){
-				String name=FilenameUtils.getBaseName(path);
+				//String name=FilenameUtils.getBaseName(path);
 				String ext=FilenameUtils.getExtension(path);
 				String projectPath=sourceCodeFile.getAbsolutePath().substring(basePath.length());
 				System.out.println("PP:"+projectPath);
 				String code=FileUtils.readFileToString(sourceCodeFile, "utf8");
-				sourceCode=new SourceCode(sourceCodeFile,projectPath,name,ext,code);
+				sourceCode=new SourceCode(sourceCodeFile,projectPath,ext,code,uuid);
 			} catch (IOException e) {
 				// TODO: Does this really need to be a fatal exception?
 				ErrorUtilities.showFatalException(e);

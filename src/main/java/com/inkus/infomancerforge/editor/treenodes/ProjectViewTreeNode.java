@@ -15,14 +15,22 @@ public class ProjectViewTreeNode extends ProjectFileTreeNamedResourceNode {
 
 	private View view=null;
 	
-	public ProjectViewTreeNode(AdventureProjectModel adventureProjectModel, TreeNode parent, File file,View view) {
-		super(adventureProjectModel, parent, file);
+	public ProjectViewTreeNode(AdventureProjectModel adventureProjectModel, TreeNode parent, View view) {
+		super(adventureProjectModel, parent, view.getMyFile());
 		this.view=view;
 	}
 	
 	public ProjectViewTreeNode(AdventureProjectModel adventureProjectModel, TreeNode parent, File file) {
 		super(adventureProjectModel, parent, file);
 		load();
+	}
+	
+	public boolean renameFileResource(File tofile) {
+		return view.renameFileResource(tofile);
+	}
+	
+	public String getFileResourceName() {
+		return view.getFileResourceName();
 	}
 
 	public boolean holdsFileGameObject(FileGameObject fileGameObject) {

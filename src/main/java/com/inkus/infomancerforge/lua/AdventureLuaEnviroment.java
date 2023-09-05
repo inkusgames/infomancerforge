@@ -49,6 +49,7 @@ import com.inkus.infomancerforge.beans.gobs.GOB;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition;
 import com.inkus.infomancerforge.beans.gobs.GOBReferance;
 import com.inkus.infomancerforge.beans.sourcecode.SourceCode;
+import com.inkus.infomancerforge.beans.sourcecode.SourceCode;
 import com.inkus.infomancerforge.beans.sourcecode.SourceCodeErrorListener;
 import com.inkus.infomancerforge.beans.sourcecode.SourceErrors;
 import com.inkus.infomancerforge.beans.views.View;
@@ -119,6 +120,9 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 	}
 
 	public void loadAllCurrent() {
+		// clear modules
+		modules.clear();
+		modulesUsed.clear();
 		for (SourceCode sourceFile:adventureProjectModel.getNamedResourceModel(SourceCode.class)) {
 			if (sourceFile.getExtension().equals("lua")) {
 				try {
@@ -136,7 +140,7 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 	}
 	
 	public boolean isModule(SourceCode sourceCode) {
-		String path=FilenameUtils.separatorsToUnix(sourceCode.getUuid().toLowerCase());
+		String path=FilenameUtils.separatorsToUnix(sourceCode.getProjectPath().toLowerCase());
 		return path.startsWith("modules/") || path.indexOf("/modules/")!=-1;
 	}
 
@@ -499,7 +503,7 @@ public class AdventureLuaEnviroment implements FileGameObjectChangeListener {
 					System.out.println("sc:"+sourceCode.getName());
 					if ("lua".equalsIgnoreCase(sourceCode.getExtension()) && isModule(sourceCode) && getModuleName(sourceCode).equals(name)) {
 						//System.out.println("sc[module]:"+sourceCode.getName());
-						System.out.println("sc[module]:"+sourceCode.getName()+";"+sourceCode.getUuid());
+						System.out.println("sc[module]:"+sourceCode.getName()+";"+sourceCode.getProjectPath());
 						if (module!=null) {
 							// TODO: See if you can create a better error
 							System.out.println("executing:"+currentlyExecuting.getName());

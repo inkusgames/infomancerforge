@@ -503,8 +503,9 @@ public class GobEditor extends DockablePanel implements FileGameObjectChangeList
 		if (source!=this && source!=propertyEditor && source!=gobDataTableModel) {
 			gobTableModel.fireTableDataChanged();
 			updatePropertiesSelection();
+			gobForm.refresh();
 			if (fileGameObject==gob) {
-				gobForm.refresh();
+				oldGOB=(GOB)SerializationUtils.clone(gob);
 			}
 		}
 	}

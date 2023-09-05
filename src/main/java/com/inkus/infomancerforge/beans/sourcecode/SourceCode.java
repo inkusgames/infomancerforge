@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.inkus.infomancerforge.beans.FileGameObject;
 import com.inkus.infomancerforge.beans.NamedResource;
 
@@ -16,20 +18,21 @@ public class SourceCode implements FileGameObject,NamedResource{
 	private String name;
 	private String projectPath; // Full project path
 	private String code;
+	private String uuid;
 	private String newCode;
 
 	transient List<SourceErrors> errors=new ArrayList<>();
-	
+
 	public SourceCode() {
 	}
 
-	public SourceCode(File sourceFile,String projectPath, String name, String extension, String code) {
+	public SourceCode(File sourceFile,String projectPath, String extension, String code, String uuid) {
 		super();
-		this.sourceFile = sourceFile;
 		this.projectPath = projectPath;
-		this.name = name;
 		this.extension = extension;
 		this.code = code;
+		this.uuid = uuid;
+		setMyFile(sourceFile);
 	}
 
 	public String getExtension() {
@@ -65,10 +68,40 @@ public class SourceCode implements FileGameObject,NamedResource{
 	public boolean isNamed() {
 		return true;
 	}
+	
+	@Override
+	public File getMyFile() {
+		return sourceFile;
+	}
+
+	@Override
+	public void setMyFile(File myFile) {
+		name=FilenameUtils.getBaseName(myFile.getName());
+		this.sourceFile = myFile;
+	}
+
+	@Override
+	public String getFileResourceName() {
+		return FilenameUtils.getBaseName(sourceFile.getName());
+	}
+	
+	@Override
+	public boolean renameFileResource(File tofile) {
+		if (sourceFile.renameTo(tofile)) {
+			setMyFile(tofile);
+			//name=FilenameUtils.getBaseName(tofile.getName());
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public String getUuid() {
-		return projectPath;
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid=uuid;
 	}
 
 	@Override

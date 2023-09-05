@@ -13,5 +13,9 @@ public abstract class BaseAction extends AbstractAction {
 		super();
 		this.adventureProjectModel = adventureProjectModel;
 	}
+	
+	public boolean multiSelectAction() {
+		return true;
+	}
 
 }

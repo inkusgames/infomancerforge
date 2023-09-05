@@ -21,6 +21,7 @@ public class Project implements Serializable{
 	private Date created;
 	private Date lastEdited;
 	private Map<String,Plugin> plugins=new HashMap<>();
+	private Map<String,String> resources=new HashMap<>();
 		
 	public Project() {
 		super();
@@ -91,12 +92,30 @@ public class Project implements Serializable{
 		this.plugins = plugins;
 	}
 
+	public Map<String, String> getResources() {
+		return resources;
+	}
+	
+	public String getResourcePathUUID(String uuid) {
+		for (var k:resources.keySet()) {
+			if (resources.get(k).equals(uuid)) {
+				return k;
+			}
+		}
+		return null;
+	}
+
+	public void setResources(Map<String, String> resources) {
+		this.resources = resources;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Arrays.hashCode(authors);
-		result = prime * result + Objects.hash(created, description, lastEdited, name, plugins, savedVersion);
+		result = prime * result
+				+ Objects.hash(created, description, lastEdited, name, plugins, resources, savedVersion);
 		return result;
 	}
 
@@ -112,7 +131,7 @@ public class Project implements Serializable{
 		return Arrays.equals(authors, other.authors) && Objects.equals(created, other.created)
 				&& Objects.equals(description, other.description) && Objects.equals(lastEdited, other.lastEdited)
 				&& Objects.equals(name, other.name) && Objects.equals(plugins, other.plugins)
-				&& savedVersion == other.savedVersion;
+				&& Objects.equals(resources, other.resources) && savedVersion == other.savedVersion;
 	}
 
 }

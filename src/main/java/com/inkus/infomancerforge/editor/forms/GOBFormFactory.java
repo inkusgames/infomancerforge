@@ -53,6 +53,10 @@ public class GOBFormFactory {
 		return new GOBForm(gob,gobEditor);
 	}
 
+	public GOBForm createGobWizardForm(GOB gob,GobEditor gobEditor) {
+		return new GOBWizardForm(gob,gobEditor);
+	}
+
 	public GOBInstanceForm createGobInstanceForm() {
 		return new GOBInstanceForm();
 	}
@@ -200,12 +204,12 @@ public class GOBFormFactory {
 	public class GOBForm extends Form<GOB> {
 		private static final long serialVersionUID = 1L;
 
-		private NamedResourceFilterComboBox<GOB> parent;
+		protected NamedResourceFilterComboBox<GOB> parent;
 
-		private GOB oldGOB = null;
-		private GobEditor gobEditor;
+		protected GOB oldGOB = null;
+		protected GobEditor gobEditor;
 
-		public GOBForm(GOB gob,GobEditor gobEditor) {
+		protected GOBForm(GOB gob,GobEditor gobEditor) {
 			super(gob);
 			oldGOB = (GOB) SerializationUtils.clone(gob);
 			this.gobEditor=gobEditor;
@@ -217,17 +221,15 @@ public class GOBFormFactory {
 			parent = new NamedResourceFilterComboBox(adventureProjectModel.getNamedResourceModel(GOB.class));
 
 			var detailGroup = addFieldGroup("GOB Details", 0, 0, 1, 1);
-			detailGroup.addField("Type", FieldType.DROP_DOWN, 0, 0, 1, 1);
-			detailGroup.addField("Parent", FieldType.CUSTOM, 0, 1, 1, 1, new Object[] { parent });
-			detailGroup.addField("Name", FieldType.STRING, 0, 2, 1, 1);
+			detailGroup.addField("Name", FieldType.STRING_INFO, 0, 0, 1, 1);
+			detailGroup.addField("Type", FieldType.DROP_DOWN, 0, 1, 1, 1);
+			detailGroup.addField("Parent", FieldType.CUSTOM, 0, 2, 1, 1, new Object[] { parent });
 			detailGroup.addField("DefinitionOnly", FieldType.CHECKBOX, 1, 3, 1, 1);
 			
-			//if (gobEditor!=null) {
-				var displayGroup = addFieldGroup("View Details", 1, 0, 1, 1);
-				displayGroup.addField("ColorBackground", FieldType.CUSTOM, 0, 0, 1, 1, new Object[] { new FormColorCustomEditor("Pick View Color")});
-				displayGroup.addField("DefaultViewMode", FieldType.DROP_DOWN, 0, 1, 1, 1);
-				displayGroup.addField("Summary", FieldType.TEXT, 0, 2, 1, 3);
-			//}
+			var displayGroup = addFieldGroup("View Details", 1, 0, 1, 1);
+			displayGroup.addField("ColorBackground", FieldType.CUSTOM, 0, 0, 1, 1, new Object[] { new FormColorCustomEditor("Pick View Color")});
+			displayGroup.addField("DefaultViewMode", FieldType.DROP_DOWN, 0, 1, 1, 1);
+			displayGroup.addField("Summary", FieldType.TEXT, 0, 2, 1, 3);
 		}
 
 		@Override
@@ -312,8 +314,34 @@ public class GOBFormFactory {
 		}
 	
 		public void refresh() {
-			setCurrentBean(getCurrentBean());
+			//setCurrentBean(getCurrentBean());
+			beanIntoGui();
 		}
 
+	}
+	
+	class GOBWizardForm extends GOBForm {
+		private static final long serialVersionUID = 1L;
+
+		protected GOBWizardForm(GOB gob, GobEditor gobEditor) {
+			super(gob, gobEditor);
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		protected void initForm() {
+			parent = new NamedResourceFilterComboBox(adventureProjectModel.getNamedResourceModel(GOB.class));
+
+			var detailGroup = addFieldGroup("GOB Details", 0, 0, 1, 1);
+			detailGroup.addField("Type", FieldType.DROP_DOWN, 0, 0, 1, 1);
+			detailGroup.addField("Parent", FieldType.CUSTOM, 0, 1, 1, 1, new Object[] { parent });
+			detailGroup.addField("Name", FieldType.STRING, 0, 2, 1, 1);
+			detailGroup.addField("DefinitionOnly", FieldType.CHECKBOX, 1, 3, 1, 1);
+			
+			var displayGroup = addFieldGroup("View Details", 1, 0, 1, 1);
+			displayGroup.addField("ColorBackground", FieldType.CUSTOM, 0, 0, 1, 1, new Object[] { new FormColorCustomEditor("Pick View Color")});
+			displayGroup.addField("DefaultViewMode", FieldType.DROP_DOWN, 0, 1, 1, 1);
+			displayGroup.addField("Summary", FieldType.TEXT, 0, 2, 1, 3);
+		}
 	}
 }

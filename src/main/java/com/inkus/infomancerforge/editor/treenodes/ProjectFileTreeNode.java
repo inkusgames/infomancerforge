@@ -30,7 +30,7 @@ public class ProjectFileTreeNode implements TreeNode{
 	private TreeNode parent;
 	private List<ProjectFileTreeNode> files=new ArrayList<ProjectFileTreeNode>();
 	
-	private static Map<File,Long> lastModifiedMap=new HashMap<>();
+	private static Map<String,Long> lastModifiedMap=new HashMap<>();
 	
 	private static Map<String, ProjectFileTreeNodeFactory> filetypeNodeFactoryMap=new HashMap<>();
 	
@@ -51,43 +51,45 @@ public class ProjectFileTreeNode implements TreeNode{
 		this.adventureProjectModel=adventureProjectModel;
 		this.parent=parent;
 		this.file=file;
-		if (!lastModifiedMap.containsKey(file)) {
+		if (!lastModifiedMap.containsKey(file.getAbsolutePath())) {
 			updateFileChangedDate();
 		}
 		refresh();
 	}
 	
 	public boolean wasFileChanged() {
-		return lastModifiedMap.get(file)!=file.lastModified();
+		return lastModifiedMap.get(file.getAbsolutePath())!=file.lastModified();
 	}
 	
 	static public boolean wasFileChanged(File file) {
-		return lastModifiedMap.get(file)!=file.lastModified();
+		return lastModifiedMap.get(file.getAbsolutePath())!=file.lastModified();
 	}
 	
 	public void updateFileChangedDate() {
-		lastModifiedMap.put(file, file.lastModified());
+		lastModifiedMap.put(file.getAbsolutePath(), file.lastModified());
 	}
 
 	static public void updateFileChangedDate(File file) {
-		lastModifiedMap.put(file, file.lastModified());
+		lastModifiedMap.put(file.getAbsolutePath(), file.lastModified());
 	}
 	
 	public void refresh() {
 		if (file.isDirectory()) {
+			List<ProjectFileTreeNode> oldFiles=new ArrayList<>();
+			oldFiles.addAll(files);
 			files.clear();
 			for (File f:file.listFiles()) {
 				// Exclude files starting with a .
 				if (!f.getName().startsWith(".")) {
 					String type=FilenameUtils.getExtension(f.getAbsolutePath()).toLowerCase();
-					ProjectFileTreeNode newNode=adventureProjectModel.getFileNodesMap().get(f);
+					ProjectFileTreeNode newNode=adventureProjectModel.getFileNodesMap().get(f.getAbsolutePath());
 					if (newNode==null) {
 						if (filetypeNodeFactoryMap.containsKey(type)) {
 							newNode=filetypeNodeFactoryMap.get(type).createNewNode(adventureProjectModel, this,f);
 						} else {
 							newNode=new ProjectFileTreeNode(adventureProjectModel, this,f);
 						}
-						adventureProjectModel.getFileNodesMap().put(f,newNode);
+						adventureProjectModel.getFileNodesMap().put(f.getAbsolutePath(),newNode);
 					} else {
 						newNode.refresh();
 					}
@@ -100,6 +102,13 @@ public class ProjectFileTreeNode implements TreeNode{
 						}
 					}
 					files.add(newNode);
+				}
+			}
+			
+			// Add files back that were not on drive yet
+			for (ProjectFileTreeNode fn:oldFiles) {
+				if (fn.hasUnsavedChanges() && !files.contains(fn)) {
+					files.add(fn);
 				}
 			}
 		}
@@ -172,7 +181,7 @@ public class ProjectFileTreeNode implements TreeNode{
 		if (isDirectory() || getClass()==ProjectFileTreeNode.class) {
 			for (var node:files) {
 				node.save(adventureProjectTreeModel);
-				lastModifiedMap.put(file,file.lastModified());
+				lastModifiedMap.put(file.getAbsolutePath(),file.lastModified());
 			}
 		} else {
 			log.warn("Save missing for type "+getClass().getName());

@@ -84,9 +84,8 @@ public class AdventureEditor extends JFrame implements ComponentListener, Window
 		control.putProperty(StackDockStation.TAB_PLACEMENT, TabPlacement.TOP_OF_DOCKABLE);
 		
 		addWindowFocusListener(this);
-		
 		work = control.createWorkingArea("work");
-
+		
 		adventureProjectModel = new AdventureProjectModel(project);
 		adventureProjectModel.getAdventureLuaEnviroment().addLuaActionChangeListener(this);
 		projectControllerActionManager = new ProjectControllerActionManager(projectTree, adventureProjectModel, work);
@@ -442,13 +441,15 @@ public class AdventureEditor extends JFrame implements ComponentListener, Window
 
 	@Override
 	public void windowGainedFocus(WindowEvent e) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				adventureProjectModel.refreshFiles();
-				AdventureEditor.this.repaint();
-			}
-		});
+		if (e.getOppositeWindow()==null) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					adventureProjectModel.refreshFiles();
+					AdventureEditor.this.repaint();
+				}
+			});
+        }
 	}
 
 	@Override

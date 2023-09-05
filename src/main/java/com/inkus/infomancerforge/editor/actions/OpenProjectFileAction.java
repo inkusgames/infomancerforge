@@ -54,7 +54,7 @@ public class OpenProjectFileAction extends BaseAction implements TreeActionInter
 	}
 
 	public boolean onlySuitableForSingleSelections() {
-		return true;
+		return false;
 	}
 
 }

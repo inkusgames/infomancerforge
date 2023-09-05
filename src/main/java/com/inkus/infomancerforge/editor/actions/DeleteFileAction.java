@@ -24,14 +24,12 @@ public class DeleteFileAction extends BaseAction implements TreeActionInterface 
 		super(adventureProjectModel);
 		putValue(NAME, "Delete File");
 		putValue(SMALL_ICON, ImageUtilities.getIcon(FluentUiRegularAL.DELETE_24, ImageUtilities.MENU_ICON_COLOR, ImageUtilities.MENU_ICON_SIZE));
-//		putValue(MNEMONIC_KEY, KeyEvent.VK_V);
-//		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK , true));
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	}
-
+	
 	@Override
 	public boolean canProcess(TreeNode treeNode) {
 		if (treeNode instanceof ProjectFileTreeNode projectFileTreeNode) {
@@ -68,6 +66,6 @@ public class DeleteFileAction extends BaseAction implements TreeActionInterface 
 	}
 
 	public boolean onlySuitableForSingleSelections() {
-		return true;
+		return false;
 	}
 }

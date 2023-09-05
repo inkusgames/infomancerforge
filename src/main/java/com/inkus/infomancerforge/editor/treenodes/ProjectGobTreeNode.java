@@ -16,8 +16,8 @@ public class ProjectGobTreeNode extends ProjectFileTreeNamedResourceNode {
 
 	private GOB gob=null;
 	
-	public ProjectGobTreeNode(AdventureProjectModel adventureProjectModel, TreeNode parent, File file,GOB gob) {
-		super(adventureProjectModel, parent, file);
+	public ProjectGobTreeNode(AdventureProjectModel adventureProjectModel, TreeNode parent,GOB gob) {
+		super(adventureProjectModel, parent, gob.getMyFile());
 		this.gob=gob;
 	}
 	
@@ -25,9 +25,17 @@ public class ProjectGobTreeNode extends ProjectFileTreeNamedResourceNode {
 		super(adventureProjectModel, parent, file);
 		load();
 	}
+	
+	public boolean renameFileResource(File tofile) {
+		return gob.renameFileResource(tofile);
+	}
+	
+	public String getFileResourceName() {
+		return gob.getFileResourceName();
+	}
 
 	public boolean holdsFileGameObject(FileGameObject fileGameObject) {
-		return fileGameObject==gob;
+		return fileGameObject.getUuid().equals(gob.getUuid());
 	}
 	
 	public NamedResource getNamedResource() {

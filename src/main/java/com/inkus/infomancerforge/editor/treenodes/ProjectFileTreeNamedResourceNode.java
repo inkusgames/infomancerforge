@@ -14,4 +14,9 @@ public abstract class ProjectFileTreeNamedResourceNode extends ProjectFileTreeNo
 	}
 	
 	public abstract NamedResource getNamedResource();
+	
+	public abstract boolean renameFileResource(File tofile);
+	public abstract String getFileResourceName();
+
+	
 }

@@ -35,7 +35,7 @@ public class NewGobWizard extends AbstractWizard<GOB> {
 		this.fileLocation=fileLocation;
 		
 		var forms=(Form<GOB>[])new Form[1];
-		forms[0]=new GOBFormFactory(adventureProjectModel,gobType).createGobForm(new GOB(),null);
+		forms[0]=new GOBFormFactory(adventureProjectModel,gobType).createGobWizardForm(new GOB(),null);
 		
 		gob=new GOB();
 		gob.setName("");
@@ -69,8 +69,9 @@ public class NewGobWizard extends AbstractWizard<GOB> {
 		Set<String> currentTables=new HashSet<>();
 		adventureProjectModel.getNamedResourceModel(GOB.class).forEach((g)->{currentTables.add(g.getGobTableName());});
 		gob.setGobTableName(StorageUtilities.getRandomName(10, currentTables));
+		gob.setMyFile(new File(fileLocation.getFile().getAbsolutePath()+"/"+gob.getName()+".gob"));
 		gob.touch();
-		ProjectGobTreeNode treeNode=new ProjectGobTreeNode(adventureProjectModel, fileLocation, new File(fileLocation.getFile().getAbsolutePath()+"/"+gob.getName()+".gob"),gob);
+		ProjectGobTreeNode treeNode=new ProjectGobTreeNode(adventureProjectModel, fileLocation, gob);
 		
 		// Add to model
 		adventureProjectModel.addFileNode(fileLocation,treeNode);

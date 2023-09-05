@@ -13,7 +13,6 @@ public interface NamedResource {
 	
 	public String getUuid();
 	public String getName();
-	
 	public boolean isNamed(); // This is needed for DataInstnaces where some are named but others are not.
 	
 	static class NamedResourceEmpty implements NamedResource{
@@ -29,7 +28,7 @@ public interface NamedResource {
 		public String getName() {
 			return "~None~";
 		}
-		
+
 		public boolean isNamed() {
 			return true;
 		}

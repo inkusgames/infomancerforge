@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -381,8 +382,15 @@ public class ProjectPluginsDialog extends JDialog {
 				StorageUtilities.saveSourceCode(module,newFile.getAbsolutePath());				
 				adventureProjectModel.fireFileGameObjectChange(this, module);
 			} else {
-				
-				SourceCode module=new SourceCode(moduleNode.getFile(),moduleNode.getFile().getAbsolutePath().substring(adventureProjectModel.getProject().getPath().length()), plugin.getFilename(), "lua", data);
+				String sourcePath=moduleNode.getFile().getAbsolutePath().substring(adventureProjectModel.getProject().getPath().length());
+				String uuid=adventureProjectModel.getProject().getResources().get(sourcePath);
+				if (uuid==null || uuid.length()==0) {
+					uuid=UUID.randomUUID().toString();
+					adventureProjectModel.getProject().getResources().put(sourcePath,uuid);
+				}
+
+				SourceCode module=new SourceCode(moduleNode.getFile(),sourcePath, "lua", data, uuid);
+
 				StorageUtilities.saveSourceCode(module,newFile.getAbsolutePath());
 				ProjectSourceCodeTreeNode treeNode=new ProjectSourceCodeTreeNode(adventureProjectModel, moduleNode, newFile);
 				adventureProjectModel.addFileNode(moduleNode,treeNode);

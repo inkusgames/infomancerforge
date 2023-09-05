@@ -44,7 +44,7 @@ public class SaveProjectAction extends BaseAction implements TreeActionInterface
 	}
 
 	public boolean onlySuitableForSingleSelections() {
-		return true;
+		return false;
 	}
 
 }

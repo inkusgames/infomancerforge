@@ -1,11 +1,15 @@
 package com.inkus.infomancerforge.beans.gobs;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.apache.commons.io.FilenameUtils;
+
+import com.inkus.infomancerforge.StorageUtilities;
 import com.inkus.infomancerforge.beans.FileGameObject;
 import com.inkus.infomancerforge.beans.NamedResource;
 import com.inkus.infomancerforge.beans.views.GobView.ViewMode;
@@ -38,13 +42,27 @@ public class GOB implements FileGameObject, NamedResource {
 
 	private Color colorBackground;
 	private String summary;
+	
+	private transient File myFile;
 
 	private transient boolean changed = false;
 
 	public GOB() {
 		uuid = UUID.randomUUID().toString();
 	}
+	
+	@Override
+	public File getMyFile() {
+		return myFile;
+	}
 
+	@Override
+	public void setMyFile(File myFile) {
+		name=FilenameUtils.getBaseName(myFile.getName());
+		this.myFile = myFile;
+	}
+
+	@Override
 	public String getUuid() {
 		return uuid;
 	}
@@ -89,6 +107,21 @@ public class GOB implements FileGameObject, NamedResource {
 
 	public void setPropertyDefinitions(List<GOBPropertyDefinition> propertyDefinitions) {
 		this.propertyDefinitions = propertyDefinitions;
+	}
+
+	@Override
+	public String getFileResourceName() {
+		return FilenameUtils.getBaseName(myFile.getName());
+	}
+	
+	@Override
+	public boolean renameFileResource(File tofile) {
+		if (myFile.renameTo(tofile)) {
+			setMyFile(tofile);
+			StorageUtilities.saveGOB(this, tofile.getAbsolutePath());
+			return true;
+		}
+		return false;
 	}
 
 	@Override

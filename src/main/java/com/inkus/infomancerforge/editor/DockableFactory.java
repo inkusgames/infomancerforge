@@ -35,7 +35,11 @@ public class DockableFactory implements SingleCDockableFactory {
 			fileGameObject=adventureProjectModel.getNamedResourceByUuid(View.class, dockableId.substring(5));
 		} else if (dockableId.startsWith("sourceCode.")) {
 			 //  \Build\data.lua
-			File file=new File(adventureProjectModel.getProject().getPath()+dockableId.substring(11));
+			String uuid=dockableId.substring(11);
+			File file=new File(adventureProjectModel.getProject().getPath()+"\\"+adventureProjectModel.getProject().getResourcePathUUID(uuid));
+			System.out.println(">>>>>>>>>> "+dockableId);
+			System.out.println("uuid:"+uuid);
+			System.out.println("Path:"+file.getAbsolutePath());
 			node=adventureProjectModel.getAdventureProjectTreeModel().findTreeNodeForFile(file);
 		} else {
 			System.out.println(">>"+dockableId);

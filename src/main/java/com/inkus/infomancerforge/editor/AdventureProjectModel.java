@@ -62,7 +62,7 @@ public class AdventureProjectModel {
 	private Map<Class<? extends NamedResource>,EventList<NamedResource>> namedResources=new HashMap<>();
 	private Map<String,GOBDataTableModel> gobTableModels=new HashMap<>();
 
-	private Map<File,ProjectFileTreeNode> fileNodesMap=null;
+	private Map<String,ProjectFileTreeNode> fileNodesMap=null;
 
 	private List<FileGameObjectChangeListener> fileGameObjectChangeListeners=new WeakList<>();
 	private List<FileGameObjectDeletedListener> fileGameObjectDeletedListeners=new WeakList<>();	
@@ -86,7 +86,7 @@ public class AdventureProjectModel {
 		}
 	}
 
-	public Map<File,ProjectFileTreeNode> getFileNodesMap(){
+	public Map<String,ProjectFileTreeNode> getFileNodesMap(){
 		if (fileNodesMap==null) {
 			fileNodesMap=new HashMap<>();
 		}
@@ -112,8 +112,19 @@ public class AdventureProjectModel {
 	public void refreshFiles() {
 		System.out.println("******************** REFRESH");
 		ProjectTreeNode root=(ProjectTreeNode)adventureProjectTreeModel.getRoot();
-		for (var list:namedResources.values()) {
+		for (EventList<NamedResource> list:namedResources.values()) {
 			list.clear();
+//			List<NamedResource> removeList=new ArrayList<>();
+//			for (NamedResource nr:list) {
+//				if (nr instanceof ProjectFileTreeNode treeNode) {
+//					if (!treeNode.hasUnsavedChanges() && !treeNode.getFile().exists()) {
+//						removeList.add(nr);
+//					}
+//				} else {
+//					removeList.add(nr);
+//				}
+//			}
+//			list.removeAll(removeList);
 		}
 		root.refresh();
 		System.out.println("******************** DONE");

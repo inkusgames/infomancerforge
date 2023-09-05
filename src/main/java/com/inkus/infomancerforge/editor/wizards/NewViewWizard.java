@@ -49,9 +49,10 @@ public class NewViewWizard extends AbstractWizard<View> {
 			JOptionPane.showMessageDialog(this, "Each View needs to have a unique name.\nThe name '"+view.getName()+"' already exists.", "Unable to create new View", JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
-		
+		view.setMyFile(new File(fileLocation.getFile().getAbsolutePath()+"/"+view.getName()+".view"));
 		view.touch();
-		ProjectViewTreeNode treeNode=new ProjectViewTreeNode(adventureProjectModel, fileLocation, new File(fileLocation.getFile().getAbsolutePath()+"/"+view.getName()+".view"),view);
+		
+		ProjectViewTreeNode treeNode=new ProjectViewTreeNode(adventureProjectModel, fileLocation, view);
 		
 		// Add to model
 		adventureProjectModel.addFileNode(fileLocation,treeNode);

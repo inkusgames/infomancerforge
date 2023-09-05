@@ -23,8 +23,6 @@ public class DeleteFolderAction extends BaseAction implements TreeActionInterfac
 		super(adventureProjectModel);
 		putValue(NAME, "Delete Folder");
 		putValue(SMALL_ICON, ImageUtilities.getIcon(FluentUiRegularAL.DELETE_24, ImageUtilities.MENU_ICON_COLOR, ImageUtilities.MENU_ICON_SIZE));
-//		putValue(MNEMONIC_KEY, KeyEvent.VK_V);
-//		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK , true));
 	}
 
 	@Override
@@ -58,6 +56,6 @@ public class DeleteFolderAction extends BaseAction implements TreeActionInterfac
 	}
 
 	public boolean onlySuitableForSingleSelections() {
-		return true;
+		return false;
 	}
 }

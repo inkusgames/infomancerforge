@@ -1,11 +1,15 @@
 package com.inkus.infomancerforge.beans.views;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.apache.commons.io.FilenameUtils;
+
+import com.inkus.infomancerforge.StorageUtilities;
 import com.inkus.infomancerforge.beans.FileGameObject;
 import com.inkus.infomancerforge.beans.NamedResource;
 import com.inkus.infomancerforge.beans.gobs.GOBReferance;
@@ -45,8 +49,34 @@ public class View implements FileGameObject,NamedResource,Serializable {
 	private List<GobView> gobs=new ArrayList<>();
 	transient int gobViewsInitDone=-1;
 
+	transient private File myFile;
+	
 	public View() {
 		uuid=UUID.randomUUID().toString();
+	}
+
+	@Override
+	public String getFileResourceName() {
+		return FilenameUtils.getBaseName(myFile.getName());
+	}
+	
+	@Override
+	public boolean renameFileResource(File tofile) {
+		if (myFile.renameTo(tofile)) {
+			setMyFile(tofile);
+			StorageUtilities.saveView(this, tofile.getAbsolutePath());
+			return true;
+		}
+		return false;
+	}
+
+	public File getMyFile() {
+		return myFile;
+	}
+
+	public void setMyFile(File myFile) {
+		name=FilenameUtils.getBaseName(myFile.getName());
+		this.myFile = myFile;
 	}
 
 	@Override

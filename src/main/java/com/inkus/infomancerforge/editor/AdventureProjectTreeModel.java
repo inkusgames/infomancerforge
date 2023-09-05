@@ -189,7 +189,7 @@ public class AdventureProjectTreeModel extends DefaultTreeModel implements FileG
 		for (int t=0;t<node.getChildCount();t++) {
 			TreeNode child=node.getChildAt(t);
 			if (child instanceof ProjectFileTreeNode projectFileTreeNode) {
-				if (projectFileTreeNode.getFile().equals(file)) {
+				if (projectFileTreeNode.getFile().getAbsolutePath().equals(file.getAbsolutePath())) {
 					return projectFileTreeNode;
 				}
 			}
