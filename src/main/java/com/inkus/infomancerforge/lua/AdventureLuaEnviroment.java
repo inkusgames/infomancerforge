@@ -49,7 +49,6 @@ import com.inkus.infomancerforge.beans.gobs.GOB;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition;
 import com.inkus.infomancerforge.beans.gobs.GOBReferance;
 import com.inkus.infomancerforge.beans.sourcecode.SourceCode;
-import com.inkus.infomancerforge.beans.sourcecode.SourceCode;
 import com.inkus.infomancerforge.beans.sourcecode.SourceCodeErrorListener;
 import com.inkus.infomancerforge.beans.sourcecode.SourceErrors;
 import com.inkus.infomancerforge.beans.views.View;

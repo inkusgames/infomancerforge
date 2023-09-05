@@ -11,7 +11,7 @@ import org.kordamp.ikonli.fluentui.FluentUiRegularAL;
 
 import com.inkus.infomancerforge.ImageUtilities;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
-import com.inkus.infomancerforge.editor.treenodes.ProjectFileTreeNode;
+import com.inkus.infomancerforge.editor.treenodes.ProjectFileTreeNamedResourceNode;
 import com.inkus.infomancerforge.editor.treenodes.ProjectGobTreeNode;
 import com.inkus.infomancerforge.editor.treenodes.ProjectSourceCodeTreeNode;
 import com.inkus.infomancerforge.editor.treenodes.ProjectViewTreeNode;
@@ -32,7 +32,7 @@ public class DeleteFileAction extends BaseAction implements TreeActionInterface 
 	
 	@Override
 	public boolean canProcess(TreeNode treeNode) {
-		if (treeNode instanceof ProjectFileTreeNode projectFileTreeNode) {
+		if (treeNode instanceof ProjectFileTreeNamedResourceNode projectFileTreeNode) {
 			return !projectFileTreeNode.isDirectory();
 		}
 		return false;
@@ -40,7 +40,7 @@ public class DeleteFileAction extends BaseAction implements TreeActionInterface 
 
 	@Override
 	public void executeOn(TreeNode treeNode,ActionEvent e) {
-		if (treeNode instanceof ProjectFileTreeNode projectFileTreeNode) {
+		if (treeNode instanceof ProjectFileTreeNamedResourceNode projectFileTreeNode) {
 			if (JOptionPane.showConfirmDialog((Component)e.getSource(), "Are you sure you want to delete '"+projectFileTreeNode.getName()+"'. This can not be undone.", "Confirm Delete!", JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
 				if (projectFileTreeNode.getFile().delete()) {
 					if (projectFileTreeNode instanceof ProjectGobTreeNode) {

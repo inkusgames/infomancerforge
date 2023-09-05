@@ -28,6 +28,7 @@ import com.inkus.infomancerforge.editor.actions.DeleteFileAction;
 import com.inkus.infomancerforge.editor.actions.DeleteFolderAction;
 import com.inkus.infomancerforge.editor.actions.OpenProjectFileAction;
 import com.inkus.infomancerforge.editor.actions.RenameFileAction;
+import com.inkus.infomancerforge.editor.actions.RenameFolderAction;
 import com.inkus.infomancerforge.editor.actions.SaveProjectAction;
 import com.inkus.infomancerforge.editor.actions.TreeActionInterface;
 import com.inkus.infomancerforge.editor.swing.DockablePanel;
@@ -74,6 +75,7 @@ public class ProjectControllerActionManager implements MouseListener, FileGameOb
 		actions.add(null);
 		// File rename Stuff
 		actions.add(new RenameFileAction(adventureProjectModel));
+		actions.add(new RenameFolderAction(adventureProjectModel));
 		actions.add(null);
 		// File delete Stuff
 		actions.add(new DeleteFileAction(adventureProjectModel));

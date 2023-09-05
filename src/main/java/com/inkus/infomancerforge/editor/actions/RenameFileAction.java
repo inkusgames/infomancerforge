@@ -16,7 +16,6 @@ import com.inkus.infomancerforge.ImageUtilities;
 import com.inkus.infomancerforge.beans.FileGameObject;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
 import com.inkus.infomancerforge.editor.treenodes.ProjectFileTreeNamedResourceNode;
-import com.inkus.infomancerforge.editor.treenodes.ProjectFileTreeNode;
 
 public class RenameFileAction extends BaseAction implements TreeActionInterface {
 	private static final long serialVersionUID = 1L;
@@ -34,7 +33,7 @@ public class RenameFileAction extends BaseAction implements TreeActionInterface 
 
 	@Override
 	public boolean canProcess(TreeNode treeNode) {
-		if (treeNode instanceof ProjectFileTreeNode projectFileTreeNode) {
+		if (treeNode instanceof ProjectFileTreeNamedResourceNode projectFileTreeNode) {
 			return !projectFileTreeNode.isDirectory();
 		}
 		return false;
