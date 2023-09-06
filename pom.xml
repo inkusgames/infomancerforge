@@ -79,7 +79,7 @@
 					<configuration>
 						<archive>
 							<manifest>
-								<mainClass>com.cinch.adventurebuilderstoolkit.AdventureBuildersToolkitLauncher</mainClass>
+								<mainClass>com.inkus.infomancerforge.AdventureBuildersToolkitLauncher</mainClass>
 							</manifest>
 						</archive>
 						<descriptorRefs>
