@@ -299,7 +299,6 @@ public class PropertyValuesGobInstance extends PropertyValues{
 		
 		@SuppressWarnings("unchecked")
 		public GobInstanceArrayPropertyValue(GOBPropertyDefinition gobPropertyDefinition,int pos,List<?> values, Class<type> forClass) {
-//			super(gobPropertyDefinition.getName()+"["+ImageUtilities.formatNumberWithLead(pos,values!=null?((List<?>)values).size():0)+"]",gobPropertyDefinition.getName(), getGeneralCellEditor(gobPropertyDefinition),getGeneralCellRenderer(gobPropertyDefinition),new StringCellArrayElementLabelRenderer("["+ImageUtilities.formatNumberWithLead(pos,values!=null?((List<?>)values).size():0)+"]",CellType.ArrayItem),forClass);
 			super(gobPropertyDefinition.getName()+"["+ImageUtilities.formatNumberWithLead(pos,values!=null?((List<?>)values).size():0)+"]",gobPropertyDefinition.getName(), getGeneralCellEditor(gobPropertyDefinition),getGeneralCellRenderer(gobPropertyDefinition),forClass);
 			this.gobPropertyDefinition=gobPropertyDefinition;
 			this.values=(List<type>)values;
