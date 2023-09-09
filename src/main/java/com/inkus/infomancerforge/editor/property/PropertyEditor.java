@@ -190,12 +190,16 @@ public class PropertyEditor extends JPanel {
 					if (p1g.getArray()==p2g.getArray()) {
 						int nf=p1g.getArray().indexOf(common.get(fromIndex).get(0).getValue());
 						int nt=p1g.getArray().indexOf(common.get(toIndex).get(0).getValue());
+						
 						for (int t=0;t<common.get(fromIndex).size();t++) {
 							GobInstanceArrayPropertyValue<?> array=(GobInstanceArrayPropertyValue<?>)common.get(fromIndex).get(0);
-							Collections.swap(array.getArray(),nf,nt);
+							
+							int d=nt<nf?-1:1;
+							for (int n=nf;n!=nt;n=n+d) {
+								Collections.swap(array.getArray(),n,n+d);
+							}
 						}
-						fireTableRowsUpdated(fromIndex, fromIndex+size-1);
-						fireTableRowsUpdated(toIndex, toIndex+size-1);
+						fireTableRowsUpdated(Math.min(nf,nt), Math.max(nf,nt));
 						
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
