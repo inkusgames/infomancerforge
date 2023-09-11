@@ -30,6 +30,7 @@ import com.inkus.infomancerforge.beans.gobs.GOBReferance;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition.Type;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
 import com.inkus.infomancerforge.editor.actions.BaseViewAction;
+import com.inkus.infomancerforge.editor.actions.RemoveGobFromView;
 import com.inkus.infomancerforge.editor.actions.SetViewTypeGobInstance;
 import com.inkus.infomancerforge.editor.gob.ViewEditor;
 
@@ -573,9 +574,11 @@ public class GobView implements ViewDrawable{
 			}
 		}
 		
-		// TODO: Add remove from view if type is base
+		// Add remove from view if type is base
+		actions.add(null);
+		// Remove from view
+		actions.add(new RemoveGobFromView(viewEditor, this,adventureProjectModel));
 		
-		// TODO: Add delete from system
 		
 		return actions;
 	}
