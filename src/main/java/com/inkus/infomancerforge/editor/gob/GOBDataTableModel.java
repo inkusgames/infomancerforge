@@ -16,8 +16,10 @@ import org.apache.commons.lang.SerializationUtils;
 import com.inkus.infomancerforge.beans.FileGameObject;
 import com.inkus.infomancerforge.beans.gobs.GOB;
 import com.inkus.infomancerforge.beans.gobs.GOBInstance;
+import com.inkus.infomancerforge.beans.gobs.GOBProperty;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition.Type;
+import com.inkus.infomancerforge.beans.gobs.GOBReferance;
 import com.inkus.infomancerforge.data.DataInstance;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
 import com.inkus.infomancerforge.editor.DataInstanceChangeListener;
@@ -283,6 +285,58 @@ public class GOBDataTableModel extends AbstractTableModel implements FileGameObj
 				System.out.println("fileGameObjectChanged 30");
 				if (!eventGob.equals(oldGOB)) {
 					System.out.println("fileGameObjectChanged 40");
+					
+					// Which GOB ref fields have changed and still exist?
+					for (var pd:gob.getPropertyDefinitions()) {
+						if (pd.getType()==Type.GOB) {
+							for (var pdOld:this.oldGOB.getPropertyDefinitions()) {
+								if (pdOld.getGobFieldName().equals(pd.getGobFieldName())) {
+									System.out.println("** PD:"+pdOld.getName());
+									// Did the type change
+									if (pdOld.getGobType()!=null && !pdOld.getGobType().equals(pd.getGobType())){
+										System.out.println("** PD Changed:"+pdOld.getName());
+										GOB oldType=adventureProjectModel.getNamedResourceByUuid(GOB.class, pdOld.getGobType());
+										GOB newType=adventureProjectModel.getNamedResourceByUuid(GOB.class, pd.getGobType());
+										// If we pointed to a parent of the current GOB then no change as all children would still be supported
+										if (!adventureProjectModel.isParentOf(newType, oldType)) {
+											System.out.println("** PD Not parent:"+pdOld.getName());
+											// We need to remove all the old incorrect instances from the arrays for each and every GOBInstance.
+											var model=adventureProjectModel.getNamedResourceModel(GOBInstance.class, gob.getUuid());
+											model.forEach(gi -> {
+												GOBProperty<?> p=gi.getProperty(pd);
+												if (pd.isArray()) {
+													System.out.println("** PD Array element:"+gi.getName());
+													if (p.getValue() instanceof List<?> array) {
+														List<GOBInstance> removeList=new ArrayList<>();
+														for (Object item:array) {
+															if (item instanceof GOBInstance gr) {
+																System.out.println("** PD Array test item:"+gr.getName());
+																if (!newType.getUuid().equals(gr.getGobType()) &&
+																	!adventureProjectModel.isParentOf(newType, adventureProjectModel.getNamedResourceByUuid(GOB.class,gr.getGobType()))) {
+																	System.out.println("** PD Array test item remove:"+gr.getUuid());
+																	removeList.add(gr);
+																}
+															}
+														}
+														array.removeAll(removeList);
+													}													
+												} else {
+													if (p.getValue() instanceof GOBInstance gr) {
+														if (!newType.getUuid().equals(gr.getGobType()) &&
+																!adventureProjectModel.isParentOf(newType, adventureProjectModel.getNamedResourceByUuid(GOB.class,gr.getGobType()))) {
+															p.setValue(null);
+														}
+													}
+												}
+											});
+										}
+									}
+									break;
+								}
+							}
+						}
+					}
+					
 					this.oldGOB=(GOB)SerializationUtils.clone(gob);
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override

@@ -474,6 +474,7 @@ public class GobEditor extends DockablePanel implements FileGameObjectChangeList
 		if ((oldGOB!=null && !oldGOB.equals(gob)) || adventureProjectModel.getGOBDataTableModel(gob).getChangedCount()!=0) {
 			if (oldGOB!=null && !oldGOB.equals(gob)) {
 				gob.touch();
+				
 				oldGOB=(GOB)SerializationUtils.clone(gob);
 				adventureProjectModel.markAllGOBChildrenAsTouched(this, gob);
 			}
