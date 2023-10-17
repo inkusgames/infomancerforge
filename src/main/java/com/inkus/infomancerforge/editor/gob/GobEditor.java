@@ -154,7 +154,9 @@ public class GobEditor extends DockablePanel implements FileGameObjectChangeList
 					@Override
 					public void run() {
 						//System.out.println("Table changed");
-						changed();
+						if (oldGOB!=null && !oldGOB.equals(gob)) {
+							changed();
+						}
 					}
 				});
 			}

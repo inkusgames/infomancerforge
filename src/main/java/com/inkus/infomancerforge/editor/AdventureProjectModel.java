@@ -195,9 +195,9 @@ public class AdventureProjectModel {
 	public void removeFileGameObjectDeletedListener(FileGameObjectDeletedListener fileGameObjectDeletedListener) {
 		fileGameObjectDeletedListeners.remove(fileGameObjectDeletedListener);
 	}
-
+	
 	public void fireFileGameObjectChange(Object source,FileGameObject fileGameObject) {
-		//new Exception("fireFileGameObjectChange from "+source.getClass().getName()).printStackTrace();;
+//		new Exception("fireFileGameObjectChange from "+source.getClass().getName()).printStackTrace();;
 
 		for (var l:new ArrayList<>(fileGameObjectChangeListeners)) {
 			l.fileGameObjectChanged(source,fileGameObject);
