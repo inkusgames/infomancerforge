@@ -36,10 +36,19 @@ public class GOBPropertyDefinition implements Serializable {
 		
 	}
 
+	public enum ConnectorType {
+		Solid,
+		Dashes,
+		DotDash,
+		Dots
+	}
+	
 	private String name="";
 	private Type type=Type.String;
+	private ConnectorType connectorType=ConnectorType.Solid;
 	private boolean array=false;
 	private boolean isRequired=false;
+	private boolean showOrdered=true;
 
 	private Integer minInt=null;
 	private Integer maxInt=null;
@@ -52,6 +61,7 @@ public class GOBPropertyDefinition implements Serializable {
 	private Color color;
 
 	private boolean showInTable=true;
+	private boolean labelConnector=true;
 	private Integer displayWidth=100;
 	
 	public GOBPropertyDefinition() {
@@ -165,6 +175,14 @@ public class GOBPropertyDefinition implements Serializable {
 		this.showInTable = showInTable;
 	}
 
+	public boolean isLabelConnector() {
+		return labelConnector;
+	}
+
+	public void setLabelConnector(boolean labelConnector) {
+		this.labelConnector = labelConnector;
+	}
+
 	public Integer getPrecision() {
 		if (precision==null) {
 			precision=2;
@@ -176,10 +194,26 @@ public class GOBPropertyDefinition implements Serializable {
 		this.precision = precision;
 	}
 
+	public ConnectorType getConnectorType() {
+		return connectorType;
+	}
+
+	public void setConnectorType(ConnectorType connectorType) {
+		this.connectorType = connectorType;
+	}
+
+	public boolean isShowOrdered() {
+		return showOrdered;
+	}
+
+	public void setShowOrdered(boolean showOrdered) {
+		this.showOrdered = showOrdered;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(array, color, displayWidth, gobFieldName, gobType, isRequired, maxFloat, maxInt, minFloat,
-				minInt, name, showInTable, type);
+		return Objects.hash(array, color, connectorType, displayWidth, gobFieldName, gobType, isRequired,
+				labelConnector, maxFloat, maxInt, minFloat, minInt, name, precision, showInTable, showOrdered, type);
 	}
 
 	@Override
@@ -191,12 +225,14 @@ public class GOBPropertyDefinition implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		GOBPropertyDefinition other = (GOBPropertyDefinition) obj;
-		return array == other.array && Objects.equals(color, other.color)
+		return array == other.array && Objects.equals(color, other.color) && connectorType == other.connectorType
 				&& Objects.equals(displayWidth, other.displayWidth) && Objects.equals(gobFieldName, other.gobFieldName)
 				&& Objects.equals(gobType, other.gobType) && isRequired == other.isRequired
-				&& Objects.equals(maxFloat, other.maxFloat) && Objects.equals(maxInt, other.maxInt)
-				&& Objects.equals(minFloat, other.minFloat) && Objects.equals(minInt, other.minInt)
-				&& Objects.equals(name, other.name) && showInTable == other.showInTable && type == other.type;
+				&& labelConnector == other.labelConnector && Objects.equals(maxFloat, other.maxFloat)
+				&& Objects.equals(maxInt, other.maxInt) && Objects.equals(minFloat, other.minFloat)
+				&& Objects.equals(minInt, other.minInt) && Objects.equals(name, other.name)
+				&& Objects.equals(precision, other.precision) && showInTable == other.showInTable
+				&& showOrdered == other.showOrdered && type == other.type;
 	}
 
 	public static class NameComparator implements Comparator<GOBPropertyDefinition> {

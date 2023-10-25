@@ -6,15 +6,20 @@ import java.util.List;
 
 import com.inkus.infomancerforge.beans.gobs.GOB;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition;
+import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition.ConnectorType;
+import com.inkus.infomancerforge.display.factories.cells.BooleanCellEditor;
+import com.inkus.infomancerforge.display.factories.cells.BooleanCellRenderer;
 import com.inkus.infomancerforge.display.factories.cells.CellType;
 import com.inkus.infomancerforge.display.factories.cells.ColorCellEditor;
 import com.inkus.infomancerforge.display.factories.cells.ColorCellRenderer;
+import com.inkus.infomancerforge.display.factories.cells.ComboBoxCellEditor;
 import com.inkus.infomancerforge.display.factories.cells.ComboBoxNamedResourceCellEditor;
 import com.inkus.infomancerforge.display.factories.cells.DoubleCellEditor;
 import com.inkus.infomancerforge.display.factories.cells.DoubleCellRenderer;
 import com.inkus.infomancerforge.display.factories.cells.IntegerCellEditor;
 import com.inkus.infomancerforge.display.factories.cells.IntegerCellRenderer;
 import com.inkus.infomancerforge.display.factories.cells.NamedResourceCellRenderer;
+import com.inkus.infomancerforge.display.factories.cells.StringCellRenderer;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
 import com.inkus.infomancerforge.editor.property.PropertyValue;
 import com.inkus.infomancerforge.editor.property.PropertyValues;
@@ -43,6 +48,11 @@ public class PropertyValuesGOBProperty extends PropertyValues {
 			break; 
 		case GOB:
 			values.add(new PropertyValueGOB());
+			values.add(new PropertyLineType());
+			values.add(new PropertyLabelConnector());
+			if (gobPropertyDefinition.isArray()) {
+				values.add(new PropertyValueOrdered());
+			}
 			break;
 		default:
 			break;
@@ -136,7 +146,54 @@ public class PropertyValuesGOBProperty extends PropertyValues {
 		}
 	}
 
+	class PropertyValueOrdered extends PropertyValue {
+		public PropertyValueOrdered() {
+			super("Ordered", "Gob Type", new BooleanCellEditor(CellType.Normal),new BooleanCellRenderer(CellType.Normal),Boolean.class);
+		}
 
+		@Override
+		public Object getValue() {
+			return gobPropertyDefinition.isShowOrdered();
+		}
+
+		@Override
+		public void setValue(Object value) {
+			gobPropertyDefinition.setShowOrdered((Boolean)value);
+		}
+	}
+
+	class PropertyLabelConnector extends PropertyValue {
+		public PropertyLabelConnector() {
+			super("Show Label", "Gob Type", new BooleanCellEditor(CellType.Normal),new BooleanCellRenderer(CellType.Normal),Boolean.class);
+		}
+
+		@Override
+		public Object getValue() {
+			return gobPropertyDefinition.isLabelConnector();
+		}
+
+		@Override
+		public void setValue(Object value) {
+			gobPropertyDefinition.setLabelConnector((Boolean)value);
+		}
+	}
+
+	class PropertyLineType extends PropertyValue {
+		public PropertyLineType() {
+			super("Line", "Gob Type", new ComboBoxCellEditor<ConnectorType>(ConnectorType.values(),CellType.Normal),new StringCellRenderer(CellType.Normal),ConnectorType.class);
+		}
+
+		@Override
+		public Object getValue() {
+			return gobPropertyDefinition.getConnectorType();
+		}
+
+		@Override
+		public void setValue(Object value) {
+			gobPropertyDefinition.setConnectorType((ConnectorType)value);
+		}
+	}
+	
 	class PropertyValueFloatMin extends PropertyValue {
 		public PropertyValueFloatMin() {
 			super("Min Float","Range Float", new DoubleCellEditor(CellType.Normal),new DoubleCellRenderer(CellType.Normal),Double.class);
