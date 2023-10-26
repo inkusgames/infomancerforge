@@ -474,7 +474,13 @@ public class GobView implements ViewDrawable{
 		// Fill background
 		g2.setColor(backgroundColor);
 		g2.fillRoundRect(bounds.x,bounds.y,bounds.width,bounds.height,ROUNDED_SIZE,ROUNDED_SIZE);
-
+		
+		// Draw type
+		g2.setColor(backgroundColor.brighter().brighter());
+		g2.setFont(ImageUtilities.getFont(FontType.Regular, 7));
+		Rectangle topBounds=new Rectangle(bounds.x+3,bounds.y+1,bounds.width-6,bounds.height-2);
+		ImageUtilities.drawParagraph(g2, ImageUtilities.fitParagraphIntoLine(g2.getFont(), g2, gobReferance.getGob(adventureProjectModel).getName() +" ", topBounds.width, Alignment.TopRight), topBounds, Alignment.TopRight);
+		
 		float y=bounds.height;
 		switch (viewMode) {
 		case Fields:

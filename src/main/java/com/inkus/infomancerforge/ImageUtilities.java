@@ -615,7 +615,6 @@ public class ImageUtilities {
 		var oldClip=graphics.getClip();
 		graphics.clip(bounds);
 		Point2D position=alignment.position(new Rectangle2D.Float(0,0,paragraph.maxWidth+1,paragraph.maxHeight+1),bounds);
-		//graphics.draw(bounds);
 		
 		Font oldFont=graphics.getFont();
 		if (paragraph.fontSize>0) {
