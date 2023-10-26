@@ -412,12 +412,14 @@ public class GobView implements ViewDrawable{
 			backgroundColor=Color.gray;
 		}
 		g2.setColor(ImageUtilities.getSuitableTextColorForBackground(backgroundColor));
-		
+
+		// We don't use View alignment here we use the summary one for the GOB;
 		ImageUtilities.drawParagraph(
 				g2, 
 				summaryParagraph, 
 				new Rectangle2D.Double(bounds.getX()+MARGIN,bounds.getY()+y,viewMode.getTextWidth(),summaryParagraph.maxHeight), 
-				viewMode.getTopAlignment());
+				gob.getSummaryAlignment().getAlignment());
+
 		return getSummaryHeight(fieldParagraphs.size()>0?V_GAP:0);
 	}
 
@@ -585,6 +587,10 @@ public class GobView implements ViewDrawable{
 
 	public RightDragHandler getRightDragHandler() {
 		return null;
+	}
+
+	public int getSortOrder() {
+		return 1000;
 	}
 
 	@Override

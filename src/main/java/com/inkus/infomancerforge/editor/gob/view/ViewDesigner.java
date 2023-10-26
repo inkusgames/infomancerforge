@@ -22,6 +22,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -710,14 +712,36 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 					(int) (view.getCanvasHeight() / view.getScale())));
 		}
 
-		private void drawViewDrawables(Graphics2D g2, Collection<? extends ViewDrawable> viewDrawables) {
+		private void addChildrenDrawables(List<ViewDrawable> allDrawables,Collection<? extends ViewDrawable> viewDrawables) {
 			for (var d : viewDrawables) {
-				d.paintDrawable(adventureProjectModel, g2, selectedMap.containsKey(d.getUuid()), d == highlighted, viewEditor);
+				allDrawables.add(d);
 				var children = d.getChildren();
 				if (children != null) {
-					drawViewDrawables(g2, children);
+					addChildrenDrawables(allDrawables,children);
 				}
 			}
+		}
+		
+		private void drawViewDrawables(Graphics2D g2, Collection<? extends ViewDrawable> viewDrawables) {
+			List<ViewDrawable> allDrawables=new ArrayList<>();
+			addChildrenDrawables(allDrawables,viewDrawables);
+			Collections.sort(allDrawables,new Comparator<ViewDrawable>() {
+				@Override
+				public int compare(ViewDrawable o1, ViewDrawable o2) {
+					return o1.getSortOrder()-o2.getSortOrder();
+				}
+			});
+			for (var d : allDrawables) {
+				d.paintDrawable(adventureProjectModel, g2, selectedMap.containsKey(d.getUuid()), d == highlighted, viewEditor);
+			}
+			
+//			for (var d : viewDrawables) {
+//				d.paintDrawable(adventureProjectModel, g2, selectedMap.containsKey(d.getUuid()), d == highlighted, viewEditor);
+//				var children = d.getChildren();
+//				if (children != null) {
+//					drawViewDrawables(g2, children);
+//				}
+//			}
 		}
 
 		private void drawObjects(Graphics2D g2) {

@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.inkus.infomancerforge.Alignment;
 import com.inkus.infomancerforge.StorageUtilities;
 import com.inkus.infomancerforge.beans.FileGameObject;
 import com.inkus.infomancerforge.beans.NamedResource;
@@ -29,6 +30,26 @@ public class GOB implements FileGameObject, NamedResource {
 		}
 
 	}
+	
+	public enum SummaryAlignment {
+		Left{
+			public Alignment getAlignment() {
+				return Alignment.TopLeft;
+			}
+		},
+		Center{
+			public Alignment getAlignment() {
+				return Alignment.Top;
+			}
+		},
+		Right{
+			public Alignment getAlignment() {
+				return Alignment.TopRight;
+			}
+		};
+		
+		abstract public Alignment getAlignment();
+	}
 
 	private String uuid;
 	private String name;
@@ -42,6 +63,7 @@ public class GOB implements FileGameObject, NamedResource {
 
 	private Color colorBackground;
 	private String summary;
+	private SummaryAlignment summaryAlignment=SummaryAlignment.Center;
 	
 	private transient File myFile;
 
@@ -171,6 +193,14 @@ public class GOB implements FileGameObject, NamedResource {
 		this.summary = summary;
 	}
 
+	public SummaryAlignment getSummaryAlignment() {
+		return summaryAlignment;
+	}
+
+	public void setSummaryAlignment(SummaryAlignment summaryAlignment) {
+		this.summaryAlignment = summaryAlignment;
+	}
+
 	public ViewMode getDefaultViewMode() {
 		return defaultViewMode;
 	}
@@ -182,7 +212,7 @@ public class GOB implements FileGameObject, NamedResource {
 	@Override
 	public int hashCode() {
 		return Objects.hash(colorBackground, defaultViewMode, definitionOnly, gobTableName, name, parent,
-				propertyDefinitions, summary, type, uuid);
+				propertyDefinitions, summary, summaryAlignment, type, uuid);
 	}
 
 	@Override
@@ -198,7 +228,8 @@ public class GOB implements FileGameObject, NamedResource {
 				&& definitionOnly == other.definitionOnly && Objects.equals(gobTableName, other.gobTableName)
 				&& Objects.equals(name, other.name) && Objects.equals(parent, other.parent)
 				&& Objects.equals(propertyDefinitions, other.propertyDefinitions)
-				&& Objects.equals(summary, other.summary) && type == other.type && Objects.equals(uuid, other.uuid);
+				&& Objects.equals(summary, other.summary) && summaryAlignment == other.summaryAlignment
+				&& type == other.type && Objects.equals(uuid, other.uuid);
 	}
 
 }

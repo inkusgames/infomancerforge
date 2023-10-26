@@ -275,4 +275,8 @@ public class ConnecterLineEndpointView implements ViewDrawable {
 				&& Float.floatToIntBits(y) == Float.floatToIntBits(other.y);
 	}
 
+	public int getSortOrder() {
+		return 100;
+	}
+	
 }

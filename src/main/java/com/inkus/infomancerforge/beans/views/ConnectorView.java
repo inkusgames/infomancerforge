@@ -339,6 +339,7 @@ public class ConnectorView implements ViewDrawable {
 
 	@Override
 	public Collection<ConnectorLineView> getChildren(){
+		getMissingInViewCount(); // This will add the parent to each for discovery. Parent is transient so doesn't save
 		return connectors;
 	}
 	
@@ -425,7 +426,11 @@ public class ConnectorView implements ViewDrawable {
 			adventureProjectModel.fireFileGameObjectChange(this, viewEditor.getView());
 		}
 	}
-	
+
+	public int getSortOrder() {
+		return 100;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(connectors, x, y);
@@ -495,6 +500,7 @@ public class ConnectorView implements ViewDrawable {
 						}else {
 							c=new ConnectorLineView();
 							connectors.add(c);
+							c.setConnectorView(ConnectorView.this);
 						}
 						
 						if (destinationGob.getGobReferance().equals(c.getDestinationReferance())) {

@@ -308,6 +308,10 @@ public class ConnectorLineView implements ViewDrawable {
 		return connecterLineEndpointViews;
 	}
 
+	public int getSortOrder() {
+		return 50;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(connecterLineEndpointView, destinationReferance);

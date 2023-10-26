@@ -25,6 +25,7 @@ public interface ViewDrawable extends Serializable {
 	
 	Collection<? extends ViewDrawable> getChildren();
 	
+	public int getSortOrder();
 	public int hashCode();
 	public boolean equals(Object obj);
 }

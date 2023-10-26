@@ -229,7 +229,8 @@ public class GOBFormFactory {
 			var displayGroup = addFieldGroup("View Details", 1, 0, 1, 1);
 			displayGroup.addField("ColorBackground", FieldType.CUSTOM, 0, 0, 1, 1, new Object[] { new FormColorCustomEditor("Pick View Color")});
 			displayGroup.addField("DefaultViewMode", FieldType.DROP_DOWN, 0, 1, 1, 1);
-			displayGroup.addField("Summary", FieldType.TEXT, 0, 2, 1, 3);
+			displayGroup.addField("SummaryAlignment", FieldType.DROP_DOWN, 0, 2, 1, 1);
+			displayGroup.addField("Summary", FieldType.TEXT, 0, 3, 1, 3);
 		}
 
 		@Override
