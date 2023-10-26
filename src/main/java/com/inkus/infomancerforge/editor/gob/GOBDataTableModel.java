@@ -19,7 +19,6 @@ import com.inkus.infomancerforge.beans.gobs.GOBInstance;
 import com.inkus.infomancerforge.beans.gobs.GOBProperty;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition.Type;
-import com.inkus.infomancerforge.beans.gobs.GOBReferance;
 import com.inkus.infomancerforge.data.DataInstance;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
 import com.inkus.infomancerforge.editor.DataInstanceChangeListener;
