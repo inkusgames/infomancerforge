@@ -8,8 +8,8 @@ import java.util.UUID;
 public class Config implements Serializable{
 	private static final long serialVersionUID = 1L;
 
-	public static final String version="1.0.0.1-Beta";
-
+	public static final String version="1.0.2-Beta(Oct 2023)";
+	
 	private List<String> knownProjects=new ArrayList<>();
 	private String lastWorkingPath;
 	private Boolean useAnalytics=null;

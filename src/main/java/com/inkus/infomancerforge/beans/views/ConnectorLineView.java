@@ -23,6 +23,7 @@ import com.inkus.infomancerforge.Alignment;
 import com.inkus.infomancerforge.ImageUtilities;
 import com.inkus.infomancerforge.ImageUtilities.FontType;
 import com.inkus.infomancerforge.beans.gobs.GOBPropertyDefinition.ConnectorType;
+import com.inkus.infomancerforge.beans.gobs.GOB;
 import com.inkus.infomancerforge.beans.gobs.GOBReferance;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
 import com.inkus.infomancerforge.editor.actions.BaseViewAction;
@@ -147,6 +148,12 @@ public class ConnectorLineView implements ViewDrawable {
 			
 			if (connecterView.getGobPropertyDefinition()!=null) {
 				c=connecterView.getGobPropertyDefinition().getColor();
+				if (c==null) {
+					GOB connectorGob=adventureProjectModel.getNamedResourceByUuid(GOB.class, connecterView.getGobPropertyDefinition().getGobType());
+					if (connectorGob!=null) {
+						c=connectorGob.getColorBackground();
+					}
+				}
 				if (c==null) {
 					c=Color.yellow;
 				}

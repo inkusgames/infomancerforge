@@ -25,6 +25,8 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -542,13 +544,108 @@ public class ImageUtilities {
 	    Paragraph paragraph=new Paragraph();
 
 	    String[] lines=text.split("\n");
+	    boolean bold=false;
+	    boolean italic=false;
+	    Pattern patten=Pattern.compile("(\\[b\\]|\\[i\\]|\\[\\/i\\]|\\[\\/b\\]|\\[color=#[A-Fa-f0-9]*\\]|\\[\\/color\\])");
+	    Pattern colorPattern=Pattern.compile("#[A-Fa-f0-9]{6}");
+
+	    Font boldFont=null;
+	    Font italicFont=null;
+	    Font boldItalicFont=null;
 	    for (String line:lines) {
+	    	if (line.indexOf("[i]")!=-1) {
+	    		System.out.println(line);
+	    	}
+	    	
 	    	if (line.length()==0) {
 	    		line=" ";
 	    	}
+	    	var matchert=patten.matcher(line);
+    		line=patten.matcher(line).replaceAll("");
+	    	int from=0;
+	    	int skip=0;
+	    	Color color=null;
 	    	AttributedString attributedString=new AttributedString(line);
-	    	attributedString.addAttribute(TextAttribute.FONT, font, 0, line.length());
-	    	
+	    	Stack<Color> colors=new Stack<>();
+	    	while (matchert.find()) {
+	    		String mb=matchert.group();
+	    		int to=matchert.start()-skip;
+	    		skip+=mb.length();
+	    		System.out.println("Found:"+mb+ " From:"+matchert.start()+" To:"+matchert.end());
+		    	if (from<to) {
+		    		if (bold && italic){
+			    		if (boldItalicFont==null) {
+			    			boldItalicFont=font.deriveFont(Font.BOLD|Font.ITALIC);
+			    		}
+				    	attributedString.addAttribute(TextAttribute.FONT, boldItalicFont, from, to);
+			    	} else if (bold){
+			    		if (boldFont==null) {
+			    			boldFont=font.deriveFont(Font.BOLD);
+			    		}
+				    	attributedString.addAttribute(TextAttribute.FONT, boldFont, from, to);
+			    	} else if (italic){
+			    		if (italicFont==null) {
+			    			italicFont=font.deriveFont(Font.ITALIC);
+			    		}
+				    	attributedString.addAttribute(TextAttribute.FONT, italicFont, from, to);
+			    	} else {
+				    	attributedString.addAttribute(TextAttribute.FONT, font, from, to);
+			    	}
+		    		if (color!=null) {
+		    			attributedString.addAttribute(TextAttribute.FOREGROUND, color, from, to);
+		    		}
+		    	}
+	    		if ("[b]".equals(mb)) {
+	    			bold=true;
+	    		} else if ("[/b]".equals(mb)) {
+	    			bold=false;
+	    		} else if ("[i]".equals(mb)) {
+	    			italic=true;
+	    		} else if ("[/i]".equals(mb)) {
+	    			italic=false;
+	    		} else if ("[/color]".equals(mb)) {
+	    			if (colors.size()>0) {
+	    				color=colors.pop();
+	    			} else {
+	    				color=null;
+	    			}
+	    		} else if (mb.startsWith("[color=")) {
+	    	    	var matcherc=colorPattern.matcher(mb);
+	    	    	if (matcherc.find()) {
+	    	    		String cs=matcherc.group().substring(1);
+	    	    		if (color!=null) {
+	    	    			colors.push(color);
+	    	    		}
+	    	    		color=new Color(Integer.parseInt(cs, 16));
+	    	    	}
+
+	    		}
+	    		from=to;
+	    	}
+	    	if (from<line.length()) {
+		    	if (bold && italic){
+		    		if (boldItalicFont==null) {
+		    			boldItalicFont=font.deriveFont(Font.BOLD|Font.ITALIC);
+		    		}
+			    	attributedString.addAttribute(TextAttribute.FONT, boldItalicFont, from, line.length());
+		    	} else if (bold){
+		    		if (boldFont==null) {
+		    			boldFont=font.deriveFont(Font.BOLD);
+		    		}
+			    	attributedString.addAttribute(TextAttribute.FONT, boldFont, from, line.length());
+		    	} else if (italic){
+		    		if (italicFont==null) {
+		    			italicFont=font.deriveFont(Font.ITALIC);
+		    		}
+			    	attributedString.addAttribute(TextAttribute.FONT, italicFont, from, line.length());
+		    	} else {
+			    	attributedString.addAttribute(TextAttribute.FONT, font, from, line.length());
+		    	}
+	    		if (color!=null) {
+	    			attributedString.addAttribute(TextAttribute.FOREGROUND, color, from, line.length());
+	    		}
+	    	}	    	
+
 	    	LineBreakMeasurer linebreaker = new LineBreakMeasurer(attributedString.getIterator(), fontRenderContext);
 
 	    	while (linebreaker.getPosition() < line.length()) {

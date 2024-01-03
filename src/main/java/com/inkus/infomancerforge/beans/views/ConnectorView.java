@@ -293,6 +293,12 @@ public class ConnectorView implements ViewDrawable {
 		if (gobPropertyDefinition!=null) {
 			c=gobPropertyDefinition.getColor();
 			if (c==null) {
+				GOB connectorGob=adventureProjectModel.getNamedResourceByUuid(GOB.class, gobPropertyDefinition.getGobType());
+				if (connectorGob!=null) {
+					c=connectorGob.getColorBackground();
+				}
+			}
+			if (c==null) {
 				c=Color.yellow;
 			}
 			g2.setColor(c);

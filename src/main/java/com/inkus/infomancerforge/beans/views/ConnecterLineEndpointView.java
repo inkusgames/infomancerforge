@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import com.inkus.infomancerforge.ImageUtilities;
+import com.inkus.infomancerforge.beans.gobs.GOB;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
 import com.inkus.infomancerforge.editor.actions.BaseViewAction;
 import com.inkus.infomancerforge.editor.gob.ViewEditor;
@@ -197,6 +198,12 @@ public class ConnecterLineEndpointView implements ViewDrawable {
 			
 			if (connectorLineView.getConnecterView().getGobPropertyDefinition()!=null) {
 				c=connectorLineView.getConnecterView().getGobPropertyDefinition().getColor();
+				if (c==null) {
+					GOB connectorGob=adventureProjectModel.getNamedResourceByUuid(GOB.class, connectorLineView.getConnecterView().getGobPropertyDefinition().getGobType());
+					if (connectorGob!=null) {
+						c=connectorGob.getColorBackground();
+					}
+				}
 				if (c==null) {
 					c=Color.yellow;
 				}
