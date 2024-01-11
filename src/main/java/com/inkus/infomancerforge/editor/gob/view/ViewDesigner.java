@@ -20,6 +20,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,12 +49,24 @@ import org.kordamp.ikonli.fluentui.FluentUiRegularMZ;
 
 import com.formdev.flatlaf.extras.components.FlatButton;
 import com.formdev.flatlaf.extras.components.FlatButton.ButtonType;
+import com.formdev.flatlaf.extras.components.FlatComboBox;
+import com.formdev.flatlaf.extras.components.FlatMenuItem;
+import com.formdev.flatlaf.extras.components.FlatPopupMenu;
+import com.formdev.flatlaf.extras.components.FlatToggleButton;
+import com.formdev.flatlaf.extras.components.FlatToolBar;
+import com.inkus.infomancerforge.Alignment;
 import com.inkus.infomancerforge.ImageUtilities;
+import com.inkus.infomancerforge.ImageUtilities.FontType;
+import com.inkus.infomancerforge.Paragraph;
+import com.inkus.infomancerforge.beans.gobs.GOB;
+import com.inkus.infomancerforge.beans.gobs.GOB.Type;
+import com.inkus.infomancerforge.beans.gobs.GOBInstance;
+import com.inkus.infomancerforge.beans.gobs.GOBReferance;
 import com.inkus.infomancerforge.beans.views.GobView;
 import com.inkus.infomancerforge.beans.views.RightDragHandler;
 import com.inkus.infomancerforge.beans.views.View;
-import com.inkus.infomancerforge.beans.views.ViewDrawable;
 import com.inkus.infomancerforge.beans.views.View.GridType;
+import com.inkus.infomancerforge.beans.views.ViewDrawable;
 import com.inkus.infomancerforge.editor.AdventureProjectModel;
 import com.inkus.infomancerforge.editor.actions.BaseViewAction;
 import com.inkus.infomancerforge.editor.actions.LinkGobInstanceToView;
@@ -62,11 +75,6 @@ import com.inkus.infomancerforge.editor.gob.ViewEditor;
 import com.inkus.infomancerforge.editor.property.PropertyEditor;
 import com.inkus.infomancerforge.editor.property.PropertyValues;
 import com.inkus.infomancerforge.editor.property.gob.PropertyValuesGobInstance;
-import com.formdev.flatlaf.extras.components.FlatComboBox;
-import com.formdev.flatlaf.extras.components.FlatMenuItem;
-import com.formdev.flatlaf.extras.components.FlatPopupMenu;
-import com.formdev.flatlaf.extras.components.FlatToggleButton;
-import com.formdev.flatlaf.extras.components.FlatToolBar;
 
 public class ViewDesigner extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener  {
 	@SuppressWarnings("unused")
@@ -90,6 +98,7 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 	private JSplitPane split;
 	
 	private List<BaseViewAction> standardMenu = new ArrayList<>();
+	private List<ViewDrawable> overylayDrawables=new ArrayList<>();
 
 	private Map<String,ViewDrawable> selectedMap = new HashMap<>();
 	private Map<String,Point> draggedMap = new HashMap<>();
@@ -141,6 +150,7 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 		editView.addMouseMotionListener(this);
 		editView.addMouseWheelListener(this);
 
+		
 		scrollPane = new JScrollPane(editView);
 		scrollPane.setDoubleBuffered(false);
 		scrollPane.setWheelScrollingEnabled(false);
@@ -157,7 +167,7 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 			}
 		});
 
-		return scrollPane;
+		return new EditViewOverlay(scrollPane);
 	}
 
 	public JComponent buildPropertiesPanel() {
@@ -186,7 +196,7 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 		FlatButton zoomIn = new FlatButton();
 		zoomIn.setAction(new ZoomIn());
 		zoomIn.setFocusable(false);
-
+		
 		FlatToolBar toolBar = new FlatToolBar();
 
 		toolBar.addSeparator();
@@ -200,6 +210,9 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 		toolBar.add(zoomOne);
 		toolBar.add(zoomIn);
 		toolBar.addSeparator();
+		toolBar.add(new ToggleAddGob());
+		toolBar.addSeparator();
+		
 		
 		FlatToolBar propBar = new FlatToolBar();
 		propBar.add(new JLabel(" Properties"));
@@ -331,6 +344,13 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 	}
 
 	public ViewDrawable findDrawableAtPoint(Point p) {
+		// Is this over the GOB Popup toolbar.
+		for (ViewDrawable r:overylayDrawables) {
+			if (r.bounds().contains(p)) {
+				return r;
+			}
+		}
+		
 		for (var d : view.getDrawables()) {
 			ViewDrawable over = d.findOver(p);
 			if (over != null) {
@@ -699,6 +719,55 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 //		}
 //	}
 
+	class EditViewOverlay extends JPanel {
+		private static final long serialVersionUID = 1L;
+
+		EditViewOverlay(JScrollPane contains){
+			super(new BorderLayout());
+			add(contains,BorderLayout.CENTER);
+		}
+		
+		@Override
+		public void paint(Graphics g) {
+			Graphics2D g2=(Graphics2D)g.create();
+			super.paint(g);
+			try {
+				overylayDrawables.clear();
+				if (view.isDrawGobWizard()) {
+					// List of all known GOB's alphabetically ordered
+					List<GOB> knownGobs=new ArrayList<>();
+					for (var gobView:view.getGobs()) {
+						GOB gob=gobView.getGobReferance().getGob(adventureProjectModel);
+						if (gob.getType()!=Type.Embedded && !knownGobs.contains(gob)) {
+							knownGobs.add(gob);
+						}
+					}
+					Collections.sort(knownGobs, new Comparator<GOB>() {
+						@Override
+						public int compare(GOB o1, GOB o2) {
+							String n1=o1.getName()!=null?o1.getName():"";
+							String n2=o2.getName()!=null?o2.getName():"";
+							return n1.compareTo(n2);
+						}
+					});
+					int width=100+4;
+					int y=0;
+					
+					for (var gob:knownGobs) {
+						overylayDrawables.add(new GobShortcutDrawable(new Rectangle(10+2,12+y,width-4,20),scrollPane.getViewport().getViewPosition(),view.getScale(),gob));
+						y+=22;
+					}
+					for (ViewDrawable vd:overylayDrawables) {
+						vd.paintDrawable(adventureProjectModel, g2, moving, draging, viewEditor);
+					}
+				}
+			} finally {
+				g2.dispose();
+			}
+		}
+
+	}
+	
 	class EditView extends JPanel {
 		private static final long serialVersionUID = 1L;
 		private double scale = 0;
@@ -908,10 +977,10 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 				public void actionPerformed(ActionEvent e) {
 					view.setDrawGrid(isSelected());
 					viewEditor.changed();
+					ViewDesigner.this.repaint();
 				}
 			});
 		}
-
 	}
 
 	class ToggleSnap extends FlatToggleButton {
@@ -938,7 +1007,31 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 
 	}
 
-	
+	class ToggleAddGob extends FlatToggleButton {
+		private static final long serialVersionUID = 1L;
+
+		ToggleAddGob() {
+			this.setButtonType(ButtonType.borderless);
+			this.setSelectedIcon(ImageUtilities.getIcon(FluentUiFilledMZ.MAGIC_WAND_20,
+					ImageUtilities.TOOLBAR_ICON_COLOR, ImageUtilities.TOOL_ICON_SIZE));
+			this.setIcon(ImageUtilities.getIcon(FluentUiRegularMZ.MAGIC_WAND_20,
+					ImageUtilities.TOOLBAR_ICON_COLOR_MUTED, ImageUtilities.TOOL_ICON_SIZE));
+			this.setToolTipText("Toggles the display of the gob add menu.");
+			this.setFocusable(false);
+
+			this.setSelected(view.isDrawGobWizard());
+			addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					view.setDrawGobWizard(isSelected());
+					viewEditor.changed();
+					ViewDesigner.this.repaint();
+				}
+			});
+		}
+
+	}
+
 	private void updatePropertiesSeen() {
 		if (toggleProperties.isSelected()) {
 			split.setDividerLocation(split.getWidth()-300);
@@ -1035,4 +1128,146 @@ public class ViewDesigner extends JPanel implements MouseListener, MouseMotionLi
 
 	}
 
+	class GobShortcutDrawable implements ViewDrawable {
+		private static final long serialVersionUID = 1L;
+		private Rectangle bounds;
+		private Rectangle scrollbounds;
+		private GOB gob;
+		
+		GobShortcutDrawable(Rectangle bounds,Point offset,double scale,GOB gob){
+			this.bounds=bounds;
+			this.gob=gob;
+			scrollbounds=new Rectangle((int)((bounds.x+offset.x)/scale),(int)((bounds.y+offset.y)/scale),(int)(bounds.width/scale),(int)(bounds.height/scale));
+		}
+		
+		@Override
+		public void recalcSize(AdventureProjectModel adventureProjectModel) {
+		}
+		
+		@Override
+		public void paintDrawable(AdventureProjectModel adventureProjectModel, Graphics2D g2, boolean isSelected, boolean isHighlighted, ViewEditor viewEditor) {
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g2.setColor(gob.getColorBackground());
+			g2.fillRoundRect(bounds.x,bounds.y,bounds.width,bounds.height,4,4);
+			g2.setColor(gob.getColorBackground().brighter());
+			g2.drawRoundRect(bounds.x,bounds.y,bounds.width,bounds.height,4,4);
+			g2.setColor(ImageUtilities.getSuitableTextColorForBackground(gob.getColorBackground()));
+			Paragraph p=ImageUtilities.breakParagraphIntoLines(ImageUtilities.getFont(FontType.Regular, ImageUtilities.VIEW_GOB_FIELD_SIZE),g2.getFontRenderContext(), gob.getName(), bounds.width, Alignment.Center);
+			ImageUtilities.drawParagraph(
+					g2, 
+					p, 
+					new Rectangle2D.Double(bounds.x,bounds.y,bounds.width,bounds.height-1), 
+					Alignment.Center);
+		}
+		
+		@Override
+		public void moveTo(int x, int y) {
+		}
+		
+		@Override
+		public boolean isVisable(Rectangle r) {
+			return true;
+		}
+		
+		@Override
+		public String getUuid() {
+			return gob.getUuid();
+		}
+		
+		@Override
+		public int getSortOrder() {
+			return 0;
+		}
+		
+		@Override
+		public RightDragHandler getRightDragHandler() {
+			return new RightDragHandler() {
+				
+				@Override
+				public ViewDrawable getDrawable() {
+					return GobShortcutDrawable.this;
+				}
+				
+				@Override
+				public List<BaseViewAction> draggedTo(ViewEditor viewEditor, AdventureProjectModel adventureProjectModel, int x,
+						int y, int vx, int vy, int sx, int sy) {
+
+					GOBInstance gobInstance=new GOBInstance();
+					gobInstance.setGobType(gob.getUuid());
+					
+					var gobDataTableModel=adventureProjectModel.getGOBDataTableModel(gob);
+					int pos=gobDataTableModel.addRow(gobInstance);
+					gobDataTableModel.fireTableRowsInserted(pos, pos);
+
+					// Add instance reference to view
+					GOBReferance gobReferance=new GOBReferance();
+					gobReferance.setTypeUuid(gob.getUuid());
+					gobReferance.setUuid(gobInstance.getUuid());
+					
+					GobView gobView=new GobView();
+					gobView.setGobReferance(gobReferance);
+					// TODO: Position here should respect grid and should resize accordingly
+					int dx = x-100;
+					int dy = y-20;
+					if (view.isSnapGrid() && view.getGridType().gridSize() > 0) {
+						int gridSize = view.getGridType().gridSize();
+						dx = ((int) ((dx + gridSize / 2) / gridSize)) * gridSize;
+						dy = ((int) ((dy + gridSize / 2) / gridSize)) * gridSize;
+					}
+					
+					gobView.setBounds(new Rectangle(dx, dy, 200, 40));
+					if (gob.getDefaultViewMode()!=null) {
+						gobView.setViewMode(gob.getDefaultViewMode());
+					}
+					gobView.setView(view);
+					gobView.recalcSize(adventureProjectModel);
+					view.getGobs().add(gobView);
+					
+					view.touch();
+					adventureProjectModel.fireDataInstanceChange(this,gobInstance);
+					adventureProjectModel.fireFileGameObjectChange(this, gob);
+					
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							ViewDesigner.this.repaint();
+						}
+					});
+					// Action already taken
+					return null;
+				}
+				
+				@Override
+				public void dragOnto(AdventureProjectModel adventureProjectModel, ViewDrawable viewDrawable) {
+				}
+				
+				@Override
+				public boolean canDragOnto(AdventureProjectModel adventureProjectModel, ViewDrawable viewDrawable) {
+					return false;
+				}
+			};
+		}
+		
+		@Override
+		public Collection<? extends ViewDrawable> getChildren() {
+			return null;
+		}
+		
+		@Override
+		public List<BaseViewAction> getActions(ViewEditor viewEditor, AdventureProjectModel adventureProjectModel) {
+			return null;
+		}
+		
+		@Override
+		public ViewDrawable findOver(Point p) {
+			return null;
+		}
+		
+		@Override
+		public Rectangle bounds() {
+			return scrollbounds;
+		}
+	}
+	
 }

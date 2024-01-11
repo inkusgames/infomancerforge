@@ -44,6 +44,7 @@ public class View implements FileGameObject,NamedResource,Serializable {
 	private int canvasHeight=5000;
 	private boolean drawGrid=true;
 	private boolean snapGrid=true;
+	private boolean drawGobWizard=false;
 	private GridType gridType=GridType.Normal;
 
 	private List<GobView> gobs=new ArrayList<>();
@@ -192,6 +193,14 @@ public class View implements FileGameObject,NamedResource,Serializable {
 		return snapGrid;
 	}
 
+	public boolean isDrawGobWizard() {
+		return drawGobWizard;
+	}
+
+	public void setDrawGobWizard(boolean drawGobWizard) {
+		this.drawGobWizard = drawGobWizard;
+	}
+
 	public void setSnapGrid(boolean snapGrid) {
 		this.snapGrid = snapGrid;
 	}
@@ -222,8 +231,8 @@ public class View implements FileGameObject,NamedResource,Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(canvasHeight, canvasWidth, drawGrid, gobs, gridType, name, posX, posY, scale, snapGrid,
-				uuid);
+		return Objects.hash(canvasHeight, canvasWidth, drawGobWizard, drawGrid, gobs, gridType, name, posX, posY, scale,
+				snapGrid, uuid);
 	}
 
 	@Override
@@ -235,12 +244,14 @@ public class View implements FileGameObject,NamedResource,Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		View other = (View) obj;
-		return canvasHeight == other.canvasHeight && canvasWidth == other.canvasWidth && drawGrid == other.drawGrid
+		return canvasHeight == other.canvasHeight && canvasWidth == other.canvasWidth
+				&& drawGobWizard == other.drawGobWizard && drawGrid == other.drawGrid
 				&& Objects.equals(gobs, other.gobs) && gridType == other.gridType && Objects.equals(name, other.name)
 				&& posX == other.posX && posY == other.posY
 				&& Double.doubleToLongBits(scale) == Double.doubleToLongBits(other.scale) && snapGrid == other.snapGrid
 				&& Objects.equals(uuid, other.uuid);
 	}
+
 
 	
 }
